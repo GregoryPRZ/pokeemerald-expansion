@@ -1,0 +1,21 @@
+name: Discord Notifications
+
+on:
+  push:
+  pull_request:
+  release:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord message
+        run: |
+          curl -H "Content-Type: application/json" \
+          -d '{
+            "username":"Meloetta",
+            "avatar_url":"https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/portrait/0648/Normal.png",
+            "content":"Nouvelle activité sur le dépôt : '${{ github.event_name }}'"
+          }' \
+          ${{ secrets.DISCORD_WEBHOOK }}
