@@ -11,11 +11,13 @@ jobs:
 
     steps:
       - name: Send Discord message
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           curl -H "Content-Type: application/json" \
           -d '{
             "username":"Meloetta",
             "avatar_url":"https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/portrait/0648/Normal.png",
-            "content":"Nouvelle activité sur le dépôt : '${{ github.event_name }}'"
+            "content":"🎮 Nouvelle activité : ${{ github.event_name }} par ${{ github.actor }}"
           }' \
-          ${{ secrets.DISCORD_WEBHOOK }}
+          "$DISCORD_WEBHOOK"
