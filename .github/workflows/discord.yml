@@ -15,14 +15,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send Discord message
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: |
-          curl -H "Content-Type: application/json" \
-          -d '{
-            "username":"Meloetta",
-            "avatar_url":"https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/portrait/0648/Normal.png",
-            "content":"🎮 Nouvelle activité : ${{ github.event_name }} par ${{ github.actor }}"
-          }' \
-          "$DISCORD_WEBHOOK"
+    - name: Send Discord message
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      run: |
+        curl -H "Content-Type: application/json" \
+        -d '{
+          "username": "Meloetta",
+          "avatar_url": "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/portrait/0648/Normal.png",
+          "embeds": [
+            {
+              "title": "🎶 Nouveau push sur le dépôt 🎶",
+              "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}",
+              "description": "**Commit:** `${{ github.sha }}`\n**Auteur:** ${{ github.actor }}\n**Message:** ${{ github.event.head_commit.message }}",
+              "color": 16753920
+            }
+          ]
+        }' \
+        "$DISCORD_WEBHOOK"
