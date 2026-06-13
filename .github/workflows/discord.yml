@@ -25,7 +25,7 @@ jobs:
           "avatar_url": "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/portrait/0648/Normal.png",
           "embeds": [
             {
-              "title": "Nouveau push 🎶 [${{ github.repository }}:${{ github.ref_name }}]",
+              "title": "🎶 Nouveau push sur [${{ github.repository }}:${{ github.ref_name }}]",
               "description": "**${{ github.sha }}** ${{ github.event.head_commit.message }} - ${{ github.actor }}",
               "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}",
               "color": 5763719
