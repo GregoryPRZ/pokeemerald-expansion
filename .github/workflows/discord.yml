@@ -15,19 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Send Discord message
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      run: |
-        curl -i -H "Content-Type: application/json" \
-        -d '{
-          "username": "Meloetta",
-          "embeds": [
-            {
-              "title": "🎶 Nouveau push sur ${{ github.repository }}",
-              "description": "Auteur : ${{ github.actor }}\n https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-              "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
-            }
-          ]
-        }' \
-        "$DISCORD_WEBHOOK"
+      - name: Send Discord message
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -i -H "Content-Type: application/json" \
+          -d '{
+            "username": "Meloetta",
+            "embeds": [
+              {
+                "title": "🎶 Nouveau push sur ${{ github.repository }}",
+                "description": "Auteur : ${{ github.actor }}",
+                "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+              }
+            ]
+          }' \
+          "$DISCORD_WEBHOOK"
