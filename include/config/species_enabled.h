@@ -32,7 +32,7 @@
 #define P_FUSION_FORMS                   TRUE
 
 // Regional Forms. Includes Regional Form evolutions, like Sirfetch'd.
-#define P_REGIONAL_FORMS                 FALSE
+#define P_REGIONAL_FORMS                 TRUE
 #define P_ALOLAN_FORMS                   P_REGIONAL_FORMS
 #define P_GALARIAN_FORMS                 P_REGIONAL_FORMS
 #define P_HISUIAN_FORMS                  P_REGIONAL_FORMS
@@ -163,7 +163,7 @@
 #define P_FAMILY_QWILFISH                FALSE
 #define P_FAMILY_SHUCKLE                 FALSE
 #define P_FAMILY_HERACROSS               P_GEN_2_POKEMON
-#define P_FAMILY_SNEASEL                 P_GEN_2_POKEMON
+#define P_FAMILY_SNEASEL                 FALSE
 #define P_FAMILY_TEDDIURSA               P_GEN_2_POKEMON
 #define P_FAMILY_SLUGMA                  P_GEN_2_POKEMON
 #define P_FAMILY_SWINUB                  P_GEN_2_POKEMON
@@ -239,7 +239,7 @@
 #define P_FAMILY_DUSKULL                 FALSE
 #define P_FAMILY_TROPIUS                 P_GEN_3_POKEMON
 #define P_FAMILY_CHIMECHO                P_GEN_3_POKEMON
-#define P_FAMILY_ABSOL                   FALSE
+#define P_FAMILY_ABSOL                   P_GEN_3_POKEMON
 #define P_FAMILY_SNORUNT                 FALSE
 #define P_FAMILY_SPHEAL                  FALSE
 #define P_FAMILY_CLAMPERL                P_GEN_3_POKEMON
@@ -282,7 +282,7 @@
 #define P_FAMILY_SPIRITOMB               P_GEN_4_POKEMON
 #define P_FAMILY_GIBLE                   FALSE
 #define P_FAMILY_RIOLU                   P_GEN_4_POKEMON
-#define P_FAMILY_HIPPOPOTAS              P_GEN_4_POKEMON
+#define P_FAMILY_HIPPOPOTAS              FALSE
 #define P_FAMILY_SKORUPI                 P_GEN_4_POKEMON
 #define P_FAMILY_CROAGUNK                FALSE
 #define P_FAMILY_CARNIVINE               P_GEN_4_POKEMON
@@ -383,7 +383,7 @@
 #define P_FAMILY_LANDORUS                FALSE
 #define P_FAMILY_KYUREM                  P_GEN_5_POKEMON
 #define P_FAMILY_KELDEO                  FALSE
-#define P_FAMILY_MELOETTA                FALSE
+#define P_FAMILY_MELOETTA                P_GEN_5_POKEMON
 #define P_FAMILY_GENESECT                P_GEN_5_POKEMON
 
 #define P_FAMILY_CHESPIN                 FALSE
@@ -473,7 +473,7 @@
 #define P_FAMILY_GUZZLORD                P_GEN_7_POKEMON
 #define P_FAMILY_NECROZMA                FALSE
 #define P_FAMILY_MAGEARNA                P_GEN_7_POKEMON
-#define P_FAMILY_MARSHADOW               P_GEN_7_POKEMON
+#define P_FAMILY_MARSHADOW               FALSE
 #define P_FAMILY_POIPOLE                 P_GEN_7_POKEMON
 #define P_FAMILY_STAKATAKA               P_GEN_7_POKEMON
 #define P_FAMILY_BLACEPHALON             P_GEN_7_POKEMON
@@ -486,7 +486,7 @@
 #define P_FAMILY_SKWOVET                 FALSE
 #define P_FAMILY_ROOKIDEE                P_GEN_8_POKEMON
 #define P_FAMILY_BLIPBUG                 FALSE
-#define P_FAMILY_NICKIT                  FALSE
+#define P_FAMILY_NICKIT                  P_GEN_8_POKEMON
 #define P_FAMILY_GOSSIFLEUR              FALSE
 #define P_FAMILY_WOOLOO                  FALSE
 #define P_FAMILY_CHEWTLE                 FALSE
