@@ -19,15 +19,16 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          curl -i -H "Content-Type: application/json" \
-          -d '{
-            "username": "Meloetta",
-            "embeds": [
+          COMMIT_MSG=$(echo "${{ github.event.head_commit.message }}" | sed 's/"/\\"/g')
+        
+          curl -H "Content-Type: application/json" \
+          -d "{
+            \"username\": \"Meloetta\",
+            \"embeds\": [
               {
-                "title": "🎶 Nouveau push sur ${{ github.repository }}",
-                "description": "Auteur : ${{ github.actor }}",
-                "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+                \"title\": \"🎶 Nouveau commit sur ${{ github.repository }}\",
+                \"description\": \"**${{ github.sha }}**\n$COMMIT_MSG\n👤 ${{ github.actor }}\n🔗 https://github.com/${{ github.repository }}/commit/${{ github.sha }}\"
               }
             ]
-          }' \
+          }" \
           "$DISCORD_WEBHOOK"
