@@ -25,7 +25,7 @@ jobs:
           "embeds": [
             {
               "title": "🎶 Nouveau push sur ${{ github.repository }}",
-              "description": "Auteur : ${{ github.actor }}",
+              "description": "Auteur : ${{ github.actor }}\n https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
               "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
             }
           ]
