@@ -19,16 +19,14 @@ jobs:
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       run: |
-        curl -H "Content-Type: application/json" \
+        curl -i -H "Content-Type: application/json" \
         -d '{
           "username": "Meloetta",
-          "avatar_url": "https://raw.githubusercontent.com/PMDCollab/SpriteCollab/master/portrait/0648/Normal.png",
           "embeds": [
             {
-              "title": "🎶 Nouveau push sur [${{ github.repository }}:${{ github.ref_name }}]",
-              "description": "**${{ github.sha }}** ${{ github.event.head_commit.message }} - ${{ github.actor }}",
-              "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}",
-              "color": 5763719
+              "title": "🎶 Nouveau push sur ${{ github.repository }}",
+              "description": "Auteur : ${{ github.actor }}",
+              "url": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
             }
           ]
         }' \
