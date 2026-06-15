@@ -805,6 +805,7 @@ struct BattleTestData
     struct BattlerTurn battleRecordTurns[MAX_TURNS][MAX_BATTLERS_COUNT];
 
     u8 queuedEventsCount;
+    u8 queuedEventsFailIndex;
     u8 queueGroupType;
     u8 queueGroupStart;
     struct QueuedEvent queuedEvents[MAX_QUEUED_EVENTS];
@@ -1155,7 +1156,7 @@ enum { TURN_CLOSED, TURN_OPEN, TURN_CLOSING };
 
 struct MoveContext
 {
-    u16 move;
+    enum Move move;
     u16 explicitMove:1;
     u16 moveSlot:2;
     u16 explicitMoveSlot:1;
@@ -1186,7 +1187,7 @@ struct ItemContext
     u16 explicitItemId:1;
     u16 partyIndex;
     u16 explicitPartyIndex:1;
-    u16 move;
+    enum Move move;
     u16 explicitMove:1;
     struct RiggedRNG rng;
     u16 explicitRNG:1;

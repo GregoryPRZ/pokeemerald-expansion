@@ -216,7 +216,7 @@ static enum Item GetPrevBall(enum Item ballId)
 static enum Item GetNextBall(enum Item ballId)
 {
     s32 i;
-    s32 index = ItemIdToBallId(ballId);
+    enum PokeBall index = ItemIdToBallId(ballId);
     enum Item newBall = ITEM_NONE;
 
     for (i = 0; i < POKEBALL_COUNT; i++)
@@ -1618,6 +1618,10 @@ static void OpenBagAndChooseItem(enum BattlerId battler)
         ReshowBattleScreenDummy();
         CloseMainBattleScreen();
         CB2_BagMenuFromBattle();
+        if (gBattleStruct->victoryCatchState == VICTORY_CATCH_OPEN_BAG)
+            CB2_ChooseBall();
+        else
+            CB2_BagMenuFromBattle();
     }
 }
 
