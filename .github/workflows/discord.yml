@@ -3,10 +3,10 @@ name: Discord Notifications
 on:
   push:
     branches:
-      - master
+      - pokemon-libra
   pull_request:
     branches:
-      - master
+      - pokemon-libra
   release:
   workflow_dispatch:
 
