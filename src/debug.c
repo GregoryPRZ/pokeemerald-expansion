@@ -232,6 +232,7 @@ struct DebugMonData
     u8 teraType;
     u8 dynamaxLevel:7;
     u8 gmaxFactor:1;
+    s8 karma;
 };
 
 struct DebugMenuListData
@@ -366,6 +367,7 @@ static void DebugAction_Give_Pokemon_SelectIVs(u8 taskId);
 static void DebugAction_Give_Pokemon_SelectEVs(u8 taskId);
 static void DebugAction_Give_Pokemon_ComplexCreateMon(u8 taskId);
 static void DebugAction_Give_Pokemon_Move(u8 taskId);
+static void DebugAction_Give_Pokemon_SelectKarma(u8 taskId);
 static void DebugAction_Give_Decoration(u8 taskId);
 static void DebugAction_Give_Decoration_SelectId(u8 taskId);
 static void DebugAction_Give_MaxMoney(u8 taskId);
@@ -505,6 +507,7 @@ static const u8 sDebugText_FlagsVars_VariableValueSet[] =    _("Var: {STR_VAR_1}
 static const u8 sDebugText_PokemonShiny[] =             _("Shiny:{CLEAR_TO 90}\n   {STR_VAR_2}{CLEAR_TO 90}\n{CLEAR_TO 90}\n{CLEAR_TO 90}");
 static const u8 sDebugText_IVs[] =                      _("IV {STR_VAR_1}:{CLEAR_TO 90}\n    {STR_VAR_3}{CLEAR_TO 90}\n{CLEAR_TO 90}\n{STR_VAR_2}{CLEAR_TO 90}");
 static const u8 sDebugText_EVs[] =                      _("EV {STR_VAR_1}:{CLEAR_TO 90}\n    {STR_VAR_3}{CLEAR_TO 90}\n{CLEAR_TO 90}\n{STR_VAR_2}{CLEAR_TO 90}");
+static const u8 sDebugText_Karma[] =                      _("Karma: {STR_VAR_1}{CLEAR_TO 90}\n    {STR_VAR_3}{CLEAR_TO 90}\n{CLEAR_TO 90}\n{STR_VAR_2}{CLEAR_TO 90}");
 // Sound Menu
 static const u8 sDebugText_Sound_SFX_ID[] =             _("SFX ID: {STR_VAR_3}   {START_BUTTON} Stop\n{STR_VAR_1}    \n{STR_VAR_2}");
 static const u8 sDebugText_Sound_Music_ID[] =           _("Music ID: {STR_VAR_3}   {START_BUTTON} Stop\n{STR_VAR_1}    \n{STR_VAR_2}");
@@ -3318,6 +3321,7 @@ static void ResetMonDataStruct(struct DebugMonData *sDebugMonData)
     sDebugMonData->teraType         = TYPE_NONE;
     sDebugMonData->dynamaxLevel     = 0;
     sDebugMonData->gmaxFactor       = FALSE;
+    sDebugMonData->karma            = 0;
     for (u32 i = 0; i < NUM_STATS; i++)
     {
         sDebugMonData->monIVs[i] = 0;
@@ -4028,8 +4032,37 @@ static void DebugAction_Give_Pokemon_Move(u8 taskId)
             gTasks[taskId].tDigit = 0;
 
             PlaySE(MUS_LEVEL_UP);
-            gTasks[taskId].func = DebugAction_Give_Pokemon_ComplexCreateMon;
+            gTasks[taskId].func = DebugAction_Give_Pokemon_SelectKarma;
         }
+    }
+    else if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        Free(sDebugMonData);
+        DebugAction_DestroyExtraWindow(taskId);
+    }
+}
+
+static void DebugAction_Give_Pokemon_SelectKarma(u8 taskId)
+{
+    if (JOY_NEW(DPAD_ANY))
+    {
+        PlaySE(SE_SELECT);
+        Debug_HandleInput_Numeric(taskId, -100, 100, 3);
+
+        Debug_Display_StatInfo(sDebugText_Karma, gTasks[taskId].tIterator, gTasks[taskId].tInput, gTasks[taskId].tDigit, gTasks[taskId].tSubWindowId, MAX_KARMA_VALUE);
+    }
+
+    if (JOY_NEW(A_BUTTON))
+    {
+        // Set current value
+        sDebugMonData->karma = gTasks[taskId].tInput;
+
+        gTasks[taskId].tInput = 0;
+        gTasks[taskId].tDigit = 0;
+
+        PlaySE(MUS_LEVEL_UP);
+        gTasks[taskId].func = DebugAction_Give_Pokemon_ComplexCreateMon;
     }
     else if (JOY_NEW(B_BUTTON))
     {
@@ -4056,6 +4089,7 @@ static void DebugAction_Give_Pokemon_ComplexCreateMon(u8 taskId) //https://githu
     u32 teraType    = sDebugMonData->teraType;
     u32 dmaxLevel   = sDebugMonData->dynamaxLevel;
     u32 gmaxFactor  = sDebugMonData->gmaxFactor;
+    s8 karma = sDebugMonData->karma;
     for (u32 i = 0; i < MAX_MON_MOVES; i++)
     {
         moves[i] = sDebugMonData->monMoves[i];
@@ -4075,6 +4109,9 @@ static void DebugAction_Give_Pokemon_ComplexCreateMon(u8 taskId) //https://githu
 
     // Gigantamax factor
     SetMonData(&mon, MON_DATA_GIGANTAMAX_FACTOR, &gmaxFactor);
+
+    // Karma
+    SetMonData(&mon, MON_DATA_KARMA, &karma);
 
     // Dynamax Level
     SetMonData(&mon, MON_DATA_DYNAMAX_LEVEL, &dmaxLevel);

@@ -2171,6 +2171,9 @@ u32 GetBoxMonData3(struct BoxPokemon *boxMon, s32 field, u8 *data)
         case MON_DATA_FRIENDSHIP:
             retVal = GetSubstruct0(boxMon)->friendship;
             break;
+        case MON_DATA_KARMA:
+            retVal = (s8)(GetSubstruct2(boxMon)->sheen - 100);
+            break;
         case MON_DATA_MOVE1:
             retVal = GetSubstruct1(boxMon)->move1;
             break;
@@ -2685,6 +2688,12 @@ void SetBoxMonData(struct BoxPokemon *boxMon, s32 field, const void *dataArg)
             break;
         case MON_DATA_FRIENDSHIP:
             SET8(GetSubstruct0(boxMon)->friendship);
+            break;
+        case MON_DATA_KARMA:
+            {
+                s8 karma = *data;
+                GetSubstruct2(boxMon)->sheen = karma + 100;
+            }
             break;
         case MON_DATA_MOVE1:
             SET16(GetSubstruct1(boxMon)->move1);
@@ -6145,6 +6154,14 @@ enum Species GetFormChangeTargetSpecies_Internal(struct FormChangeContext ctx)
                 || ctx.moves[1] == formChanges[i].param1
                 || ctx.moves[2] == formChanges[i].param1
                 || ctx.moves[3] == formChanges[i].param1)
+                targetSpecies = formChanges[i].targetSpecies;
+            break;
+        case FORM_CHANGE_BATTLE_LIBRA_EVOLUTION_POSITIVE:
+            if (ctx.karma > 0)
+                targetSpecies = formChanges[i].targetSpecies;
+            break;
+        case FORM_CHANGE_BATTLE_LIBRA_EVOLUTION_NEGATIVE:
+            if (ctx.karma < 0)
                 targetSpecies = formChanges[i].targetSpecies;
             break;
         case FORM_CHANGE_BATTLE_SWITCH_OUT:

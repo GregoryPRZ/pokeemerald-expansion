@@ -1169,6 +1169,148 @@ const struct SpeciesInfo gSpeciesInfoGen8[] =
         .formChangeTable = sCorviknightFormChangeTable,
     },
 #endif //P_GIGANTAMAX_FORMS
+
+#if P_LIBRA_EVOLUTIONS
+    [SPECIES_CORVIKNIGHT_LIBRA_POSITIVE] =
+    {
+        .baseHP        = 98,
+        .baseAttack    = 87,
+        .baseDefense   = 105,
+        .baseSpeed     = 67,
+        .baseSpAttack  = 53,
+        .baseSpDefense = 85,
+        .types = MON_TYPES(TYPE_FLYING, TYPE_STEEL),
+        .catchRate = 45,
+        .expYield = 248,
+        .evYield_Defense = 3,
+        .genderRatio = PERCENT_FEMALE(50),
+        .eggCycles = 15,
+        .friendship = STANDARD_FRIENDSHIP,
+        .growthRate = GROWTH_MEDIUM_SLOW,
+        .eggGroups = MON_EGG_GROUPS(EGG_GROUP_FLYING),
+        .abilities = { ABILITY_PRESSURE, ABILITY_UNNERVE, ABILITY_MIRROR_ARMOR },
+        .bodyColor = BODY_COLOR_PURPLE,
+        .speciesName = _("CorviknightP"),
+        .cryId = CRY_CORVIKNIGHT,
+        .natDexNum = NATIONAL_DEX_CORVIKNIGHT,
+        .categoryName = _("Raven"),
+        .height = 22,
+        .weight = 750,
+        .description = COMPOUND_STRING(
+            "This Pokémon reigns supreme in the skies\n"
+            "of the Galar region. The black luster of\n"
+            "its steel body could drive terror into\n"
+            "the heart of any foe."),
+        .pokemonScale = 256,
+        .pokemonOffset = 0,
+        .trainerScale = 348,
+        .trainerOffset = 6,
+        .frontPic = gMonFrontPic_CorviknightLibraPositive,
+        .frontPicSize = MON_COORDS_SIZE(56, 64),
+        .frontPicYOffset = 2,
+        .frontAnimFrames = ANIM_FRAMES(
+            ANIMCMD_FRAME(0, 1),
+            ANIMCMD_FRAME(1, 50),
+            ANIMCMD_FRAME(0, 1),
+        ),
+        .frontAnimId = ANIM_H_VIBRATE,
+        .backPic = gMonBackPic_CorviknightLibraPositive,
+        .backPicSize = MON_COORDS_SIZE(64, 64),
+        .backPicYOffset = 3,
+        //.backAnimId = BACK_ANIM_NONE,
+        .palette = gMonPalette_CorviknightLibraPositive,
+        .shinyPalette = gMonShinyPalette_CorviknightLibraPositive,
+        .iconSprite = gMonIcon_CorviknightLibraPositive,
+        .iconPalIndex = 0,
+        .pokemonJumpType = PKMN_JUMP_TYPE_NONE,
+        SHADOW(-1, 9, SHADOW_SIZE_L)
+        FOOTPRINT(Corviknight)
+        OVERWORLD(
+            sPicTable_Corviknight,
+            SIZE_32x32,
+            SHADOW_SIZE_M,
+            TRACKS_FOOT,
+            sAnimTable_Following,
+            gOverworldPalette_Corviknight,
+            gShinyOverworldPalette_Corviknight
+        )
+        .isLibraEvolution = TRUE,
+        .levelUpLearnset = sCorviknightLevelUpLearnset,
+        .teachableLearnset = sCorviknightTeachableLearnset,
+        .formSpeciesIdTable = sCorviknightFormSpeciesIdTable,
+        .formChangeTable = sCorviknightFormChangeTable,
+    },
+
+    [SPECIES_CORVIKNIGHT_LIBRA_NEGATIVE] =
+    {
+        .baseHP        = 98,
+        .baseAttack    = 87,
+        .baseDefense   = 105,
+        .baseSpeed     = 67,
+        .baseSpAttack  = 53,
+        .baseSpDefense = 85,
+        .types = MON_TYPES(TYPE_FLYING, TYPE_STEEL),
+        .catchRate = 45,
+        .expYield = 248,
+        .evYield_Defense = 3,
+        .genderRatio = PERCENT_FEMALE(50),
+        .eggCycles = 15,
+        .friendship = STANDARD_FRIENDSHIP,
+        .growthRate = GROWTH_MEDIUM_SLOW,
+        .eggGroups = MON_EGG_GROUPS(EGG_GROUP_FLYING),
+        .abilities = { ABILITY_PRESSURE, ABILITY_UNNERVE, ABILITY_MIRROR_ARMOR },
+        .bodyColor = BODY_COLOR_PURPLE,
+        .speciesName = _("CorviknightN"),
+        .cryId = CRY_CORVIKNIGHT,
+        .natDexNum = NATIONAL_DEX_CORVIKNIGHT,
+        .categoryName = _("Raven"),
+        .height = 22,
+        .weight = 750,
+        .description = COMPOUND_STRING(
+            "This Pokémon reigns supreme in the skies\n"
+            "of the Galar region. The black luster of\n"
+            "its steel body could drive terror into\n"
+            "the heart of any foe."),
+        .pokemonScale = 256,
+        .pokemonOffset = 0,
+        .trainerScale = 348,
+        .trainerOffset = 6,
+        .frontPic = gMonFrontPic_CorviknightLibraNegative,
+        .frontPicSize = MON_COORDS_SIZE(56, 64),
+        .frontPicYOffset = 2,
+        .frontAnimFrames = ANIM_FRAMES(
+            ANIMCMD_FRAME(0, 1),
+            ANIMCMD_FRAME(1, 50),
+            ANIMCMD_FRAME(0, 1),
+        ),
+        .frontAnimId = ANIM_H_VIBRATE,
+        .backPic = gMonBackPic_CorviknightLibraNegative,
+        .backPicSize = MON_COORDS_SIZE(64, 64),
+        .backPicYOffset = 3,
+        //.backAnimId = BACK_ANIM_NONE,
+        .palette = gMonPalette_CorviknightLibraNegative,
+        .shinyPalette = gMonShinyPalette_CorviknightLibraNegative,
+        .iconSprite = gMonIcon_CorviknightLibraNegative,
+        .iconPalIndex = 0,
+        .pokemonJumpType = PKMN_JUMP_TYPE_NONE,
+        SHADOW(-1, 9, SHADOW_SIZE_L)
+        FOOTPRINT(Corviknight)
+        OVERWORLD(
+            sPicTable_Corviknight,
+            SIZE_32x32,
+            SHADOW_SIZE_M,
+            TRACKS_FOOT,
+            sAnimTable_Following,
+            gOverworldPalette_Corviknight,
+            gShinyOverworldPalette_Corviknight
+        )
+        .isLibraEvolution = TRUE,
+        .levelUpLearnset = sCorviknightLevelUpLearnset,
+        .teachableLearnset = sCorviknightTeachableLearnset,
+        .formSpeciesIdTable = sCorviknightFormSpeciesIdTable,
+        .formChangeTable = sCorviknightFormChangeTable,
+    },
+#endif //P_LIBRA_EVOLUTIONS
 #endif //P_FAMILY_ROOKIDEE
 
 #if P_FAMILY_BLIPBUG

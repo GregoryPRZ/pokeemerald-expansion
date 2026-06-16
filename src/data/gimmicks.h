@@ -15,6 +15,16 @@ const struct GimmickInfo gGimmicksInfo[GIMMICKS_COUNT] =
         .CanActivate = CanMegaEvolve,
         .ActivateGimmick = ActivateMegaEvolution,
     },
+    [GIMMICK_LIBRA] =
+    {
+        .triggerSheet = &sSpriteSheet_MegaTrigger,
+        .triggerPal = &sSpritePalette_MegaTrigger,
+        .triggerTemplate = &sSpriteTemplate_GimmickTrigger,
+        .indicatorData = sMegaIndicatorGfx,
+        .indicatorPalTag = TAG_MEGA_INDICATOR_PAL,
+        .CanActivate = CanLibraEvolve,
+        .ActivateGimmick = ActivateLibraEvolution,
+    },
     [GIMMICK_Z_MOVE] =
     {
         .triggerSheet = &sSpriteSheet_ZMoveTrigger,

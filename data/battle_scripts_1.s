@@ -3915,6 +3915,38 @@ BattleScript_MegaEvolutionAfterString:
 	effectsafterformchange
 	end3
 
+BattleScript_LibraEvolutionPositive::
+	flushtextbox
+	trytrainerslidemegaevolutionmsg
+	printstring STRINGID_LIBRAEVOREACTING
+BattleScript_LibraEvolutionPositiveAfterString:
+	waitmessage B_WAIT_TIME_LONG
+	handleformchange BS_SCRIPTING, 0
+	playanimation BS_SCRIPTING, B_ANIM_MEGA_EVOLUTION
+	waitanimation
+	handleformchange BS_SCRIPTING, 1
+	printstring STRINGID_LIBRAEVOEVOLVED
+	waitmessage B_WAIT_TIME_LONG
+	switchinabilities BS_SCRIPTING
+	effectsafterformchange
+	end3
+
+BattleScript_LibraEvolutionNegative::
+	flushtextbox
+	trytrainerslidemegaevolutionmsg
+	printstring STRINGID_LIBRAEVOREACTING
+BattleScript_LibraEvolutionNegativeAfterString:
+	waitmessage B_WAIT_TIME_LONG
+	handleformchange BS_SCRIPTING, 0
+	playanimation BS_SCRIPTING, B_ANIM_MEGA_EVOLUTION
+	waitanimation
+	handleformchange BS_SCRIPTING, 1
+	printstring STRINGID_LIBRAEVOEVOLVED
+	waitmessage B_WAIT_TIME_LONG
+	switchinabilities BS_SCRIPTING
+	effectsafterformchange
+	end3
+
 BattleScript_WishMegaEvolution::
 	flushtextbox
 	trytrainerslidemegaevolutionmsg

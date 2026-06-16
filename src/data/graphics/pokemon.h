@@ -23523,6 +23523,20 @@ const u32 gObjectEventPic_Substitute[] = INCGFX_COMP("graphics/pokemon/question_
 #endif //OW_PKMN_OBJECTS_SHARE_PALETTES
 #endif //OW_POKEMON_OBJECT_EVENTS
 
+#if P_LIBRA_EVOLUTIONS
+    const u32 gMonFrontPic_CorviknightLibraNegative[] = INCGFX_U32("graphics/pokemon/corviknight/anim_front.png", ".4bpp.smol");
+    const u16 gMonPalette_CorviknightLibraNegative[] = INCGFX_U16("graphics/pokemon/corviknight/normal.pal", ".gbapal");
+    const u32 gMonBackPic_CorviknightLibraNegative[] = INCGFX_U32("graphics/pokemon/corviknight/back.png", ".4bpp.smol");
+    const u16 gMonShinyPalette_CorviknightLibraNegative[] = INCGFX_U16("graphics/pokemon/corviknight/shiny.pal", ".gbapal");
+    const u8 gMonIcon_CorviknightLibraNegative[] = INCGFX_U8("graphics/pokemon/corviknight/icon.png", ".4bpp");
+
+    const u32 gMonFrontPic_CorviknightLibraPositive[] = INCGFX_U32("graphics/pokemon/corviknight/anim_front.png", ".4bpp.smol");
+    const u16 gMonPalette_CorviknightLibraPositive[] = INCGFX_U16("graphics/pokemon/corviknight/normal.pal", ".gbapal");
+    const u32 gMonBackPic_CorviknightLibraPositive[] = INCGFX_U32("graphics/pokemon/corviknight/back.png", ".4bpp.smol");
+    const u16 gMonShinyPalette_CorviknightLibraPositive[] = INCGFX_U16("graphics/pokemon/corviknight/shiny.pal", ".gbapal");
+    const u8 gMonIcon_CorviknightLibraPositive[] = INCGFX_U8("graphics/pokemon/corviknight/icon.png", ".4bpp");
+#endif //P_LIBRA_EVOLUTIONS
+
 #if P_GIGANTAMAX_FORMS
     const u32 gMonFrontPic_CorviknightGmax[] = INCGFX_U32("graphics/pokemon/corviknight/gmax/front.png", ".4bpp.smol");
     const u32 gMonBackPic_CorviknightGmax[] = INCGFX_U32("graphics/pokemon/corviknight/gmax/back.png", ".4bpp.smol");

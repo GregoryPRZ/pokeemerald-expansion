@@ -491,8 +491,6 @@
 #define MUS_RG_SLOW_PALLET          557 // MUS_RG_SLOWMASARA
 #define MUS_RG_TEACHY_TV_MENU       558 // MUS_RG_TVNOIZE
 
-#define END_MUS                     558
-
 // These PH_* constants are phoneme sounds used by the "bard" NPC (see src/bard_music.c and src/mauville_old_man.c).
 // Each comes in a triplet of PH_*_BLEND, PH_*_HELD, and PH_*_SOLO, and the name of each triplet incorporates the English phonetic sound it represents.
 #define PH_TRAP_BLEND               559
@@ -918,7 +916,7 @@
 #define MUS_HG_OBTAIN_B_POINTS 975
 #define MUS_HG_WIN_MINIGAME 976
 
-#define END_MUS                     MUS_BW_OBTAIN_BERRY
+#define END_MUS                     MUS_HG_WIN_MINIGAME
 
 #define MUS_ROUTE118                0x7FFF  // Map is split into 2 music sections. controlled by GetCurrLocationDefaultMusic().
 

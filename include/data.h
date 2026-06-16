@@ -74,6 +74,7 @@ struct TrainerMon
     u8 lvl;
     enum PokeBall ball:8;
     u8 friendship;
+    s8 karma;
     u8 nature:5;
     bool8 gender:2;
     bool8 isShiny:1;

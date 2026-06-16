@@ -64,6 +64,7 @@ enum MonData {
     MON_DATA_SPATK_EV,
     MON_DATA_SPDEF_EV,
     MON_DATA_FRIENDSHIP,
+    MON_DATA_KARMA,
     MON_DATA_SMART,
     MON_DATA_POKERUS,
     MON_DATA_POKERUS_STRAIN,
@@ -358,6 +359,7 @@ struct BattlePokemon
     u16 hp;
     u8 level;
     u8 friendship;
+    s8 karma;
     u16 maxHP;
     enum Item item;
     u8 nickname[POKEMON_NAME_LENGTH + 1];
@@ -413,6 +415,7 @@ struct SpeciesInfo /*0xC4*/
     u8 genderRatio;
     u8 eggCycles;
     u8 friendship;
+    s8 karma;
     u8 growthRate;
     enum EggGroup eggGroups[EGG_GROUPS_PER_MON];
     enum Ability abilities[NUM_ABILITY_SLOTS]; // 3 abilities, no longer u8 because we have over 255 abilities now.
@@ -477,6 +480,7 @@ struct SpeciesInfo /*0xC4*/
     u32 isParadox:1;
     u32 isTotem:1;
     u32 isMegaEvolution:1;
+    u32 isLibraEvolution:1;
     u32 isPrimalReversion:1;
     u32 isUltraBurst:1;
     u32 isGigantamax:1;
@@ -634,6 +638,7 @@ struct FormChangeContext
     enum Ability ability;
     u16 learnedMove;
     u32 status;
+    s8 karma;
     enum Move moves[MAX_MON_MOVES];
     u16 hp;
     u16 maxHP;

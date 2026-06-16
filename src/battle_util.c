@@ -8453,6 +8453,34 @@ bool32 DoesSpeciesUseHoldItemToChangeForm(enum Species species, enum Item heldIt
     return FALSE;
 }
 
+bool32 DoesSpeciesHasEnoughKarmaToChangeForm(enum Species species, s8 karma)
+{
+    u32 i;
+    const struct FormChange *formChanges = GetSpeciesFormChanges(species);
+
+    if (karma == 0)
+        return FALSE;
+
+    for (i = 0; formChanges != NULL && formChanges[i].method != FORM_CHANGE_TERMINATOR; i++)
+    {
+        enum FormChanges method = formChanges[i].method;
+        switch (method)
+        {
+        case FORM_CHANGE_BATTLE_LIBRA_EVOLUTION_POSITIVE:
+            if (karma > 0)
+                return TRUE;
+            break;
+        case FORM_CHANGE_BATTLE_LIBRA_EVOLUTION_NEGATIVE:
+            if (karma < 0)
+                return TRUE;
+            break;
+        default:
+            break;
+        }
+    }
+    return FALSE;
+}
+
 bool32 CanMegaEvolve(enum BattlerId battler)
 {
     enum HoldEffect holdEffect = GetBattlerHoldEffectIgnoreNegation(battler);
@@ -8491,6 +8519,31 @@ bool32 CanMegaEvolve(enum BattlerId battler)
         return TRUE;
 
     // No checks passed, the mon CAN'T mega evolve.
+    return FALSE;
+}
+
+bool32 CanLibraEvolve(enum BattlerId battler)
+{
+    enum BattlerPosition position = GetBattlerPosition(battler);
+
+    // Check if Trainer has already Libra Evolved.
+    if (HasTrainerUsedGimmick(battler, GIMMICK_LIBRA))
+        return FALSE;
+
+    // Check if battler has another gimmick active.
+    if (GetActiveGimmick(battler) != GIMMICK_NONE)
+        return FALSE;
+
+    // Check if battler is currently held by Sky Drop.
+    if (gBattleMons[battler].volatiles.semiInvulnerable == STATE_SKY_DROP_TARGET)
+        return FALSE;
+
+    enum Ability ability = GetBattlerAbility(battler);
+
+    if (DoesSpeciesHasEnoughKarmaToChangeForm(gBattleMons[battler].species, gBattleMons[battler].karma))
+        return TRUE;
+
+    // No checks passed, the mon CAN'T libra evolve.
     return FALSE;
 }
 
@@ -8545,6 +8598,22 @@ void ActivateMegaEvolution(enum BattlerId battler)
     }
 }
 
+void ActivateLibraEvolution(enum BattlerId battler)
+{
+    enum Ability ability = GetBattlerAbility(battler);
+    SetActiveGimmick(battler, GIMMICK_LIBRA);
+    SetGimmickAsActivated(battler, GIMMICK_LIBRA);
+
+    if (TryBattleFormChange(battler, FORM_CHANGE_BATTLE_LIBRA_EVOLUTION_POSITIVE, ability))
+    {
+        BattleScriptPushCursorAndCallback(BattleScript_LibraEvolutionPositive);
+    }
+    else if (TryBattleFormChange(battler, FORM_CHANGE_BATTLE_LIBRA_EVOLUTION_NEGATIVE, ability))
+    {
+        BattleScriptPushCursorAndCallback(BattleScript_LibraEvolutionNegative);
+    }
+}
+
 void ActivateUltraBurst(enum BattlerId battler)
 {
     enum Ability ability = GetBattlerAbility(battler);
@@ -8553,6 +8622,14 @@ void ActivateUltraBurst(enum BattlerId battler)
     SetGimmickAsActivated(battler, GIMMICK_ULTRA_BURST);
     TryBattleFormChange(battler, FORM_CHANGE_BATTLE_ULTRA_BURST, ability);
     BattleScriptPushCursorAndCallback(BattleScript_UltraBurst);
+}
+
+bool32 IsBattlerLibraEvolved(enum BattlerId battler)
+{
+    // While Transform does copy stats and visuals, it shouldn't be counted as true Libra Evolution.
+    if (gBattleMons[battler].volatiles.transformed)
+        return FALSE;
+    return (gSpeciesInfo[gBattleMons[battler].species].isLibraEvolution);
 }
 
 bool32 IsBattlerMegaEvolved(enum BattlerId battler)
@@ -8600,6 +8677,7 @@ enum Species GetBattleFormChangeTargetSpecies(enum BattlerId battler, enum FormC
         .method = method,
         .currentSpecies = gBattleMons[battler].species,
         .heldItem = gBattleMons[battler].item,
+        .karma = GetMonData(GetBattlerMon(battler), MON_DATA_KARMA),
         .ability = ability,
         .status = gBattleMons[battler].status1,
         .gmaxFactor = GetMonData(GetBattlerMon(battler), MON_DATA_GIGANTAMAX_FACTOR),
@@ -8629,7 +8707,7 @@ static bool32 CanBattlerFormChange(enum BattlerId battler, enum FormChanges meth
             return TRUE;
         // Fallthrough
     case FORM_CHANGE_FAINT:
-        if (IsBattlerMegaEvolved(battler) || IsBattlerUltraBursted(battler) || IsBattlerInTeraForm(battler) || IsGigantamaxed(battler))
+        if (IsBattlerLibraEvolved(battler) || IsBattlerMegaEvolved(battler) || IsBattlerUltraBursted(battler) || IsBattlerInTeraForm(battler) || IsGigantamaxed(battler))
             return TRUE;
         break;
     case FORM_CHANGE_BATTLE_SWITCH_OUT:

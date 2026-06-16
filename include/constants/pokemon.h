@@ -230,6 +230,8 @@ enum OtIdMethod
 #define USE_RANDOM_IVS (MAX_PER_STAT_IVS + 1)
 #define MAX_PER_STAT_EVS ((P_EV_CAP >= GEN_6) ? 252 : 255)
 #define MAX_TOTAL_EVS 510
+#define MAX_KARMA_VALUE 100
+#define MIN_KARMA_VALUE -100
 #define EV_ITEM_RAISE_LIMIT ((I_VITAMIN_EV_CAP >= GEN_8) ? MAX_PER_STAT_EVS : 100)
 
 // Move category defines.

@@ -276,6 +276,8 @@ extern const u8 BattleScript_SelectingNotAllowedMoveHealBlockInPalace[];
 extern const u8 BattleScript_DefogClearHazards[];
 extern const u8 BattleScript_MegaEvolution[];
 extern const u8 BattleScript_WishMegaEvolution[];
+extern const u8 BattleScript_LibraEvolutionPositive[];
+extern const u8 BattleScript_LibraEvolutionNegative[];
 extern const u8 BattleScript_MoveEffectClearSmog[];
 extern const u8 BattleScript_MoveEffectSmackDown[];
 extern const u8 BattleScript_MoveEffectFlameBurst[];
