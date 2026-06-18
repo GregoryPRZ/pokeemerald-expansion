@@ -8373,6 +8373,18 @@ const union AffineAnimCmd* const gSpriteAffineAnimTable_MegaSymbol[] =
     sSpriteAffineAnim_MegaSymbol,
 };
 
+static const union AffineAnimCmd sSpriteAffineAnim_LibraWheel[] =
+{
+    AFFINEANIMCMD_FRAME(0x20, 0x20, 0, 0),
+    AFFINEANIMCMD_FRAME(0x4, 0x4, 4, 120),
+    AFFINEANIMCMD_END_ALT(1),
+};
+
+const union AffineAnimCmd *const gSpriteAffineAnimTable_LibraWheel[] =
+{
+    sSpriteAffineAnim_LibraWheel,
+};
+
 // Used for determining which animation to use for Order Up
 void AnimTask_GetCommanderType(u8 taskId)
 {

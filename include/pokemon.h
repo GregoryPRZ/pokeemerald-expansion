@@ -481,6 +481,8 @@ struct SpeciesInfo /*0xC4*/
     u32 isTotem:1;
     u32 isMegaEvolution:1;
     u32 isLibraEvolution:1;
+    u32 isPositiveLibraEvolution:1;
+    u32 isNegativeLibraEvolution:1;
     u32 isPrimalReversion:1;
     u32 isUltraBurst:1;
     u32 isGigantamax:1;

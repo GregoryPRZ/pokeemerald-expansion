@@ -17,11 +17,11 @@ const struct GimmickInfo gGimmicksInfo[GIMMICKS_COUNT] =
     },
     [GIMMICK_LIBRA] =
     {
-        .triggerSheet = &sSpriteSheet_MegaTrigger,
-        .triggerPal = &sSpritePalette_MegaTrigger,
+        .triggerSheet = &sSpriteSheet_LibraTrigger,
+        .triggerPal = &sSpritePalette_LibraTrigger,
         .triggerTemplate = &sSpriteTemplate_GimmickTrigger,
-        .indicatorData = sMegaIndicatorGfx,
-        .indicatorPalTag = TAG_MEGA_INDICATOR_PAL,
+        .indicatorData = sLibraIndicatorGfx,
+        .indicatorPalTag = TAG_LIBRA_INDICATOR_PAL,
         .CanActivate = CanLibraEvolve,
         .ActivateGimmick = ActivateLibraEvolution,
     },

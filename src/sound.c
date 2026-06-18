@@ -397,6 +397,12 @@ void PlayCryInternal(enum Species species, s8 pan, s8 volume, u8 priority, u8 mo
     if (!P_MODIFIED_MEGA_CRIES && gSpeciesInfo[species].isMegaEvolution)
         mode = P_MODIFIED_MEGA_CRY_MODE;
 
+    if (gSpeciesInfo[species].isNegativeLibraEvolution)
+        mode = CRY_MODE_FAINT;
+    
+    if (gSpeciesInfo[species].isPositiveLibraEvolution)
+        mode = CRY_MODE_HIGH_PITCH;
+
     switch (mode)
     {
     case CRY_MODE_NORMAL:

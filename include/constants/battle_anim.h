@@ -425,7 +425,9 @@
 #define ANIM_TAG_TATSUGIRI_DROOPY           (ANIM_SPRITES_START + 410)
 #define ANIM_TAG_TATSUGIRI_STRETCHY         (ANIM_SPRITES_START + 411)
 #define ANIM_TAG_SAFARI_BAIT                (ANIM_SPRITES_START + 412)
-#define ANIM_TAG_COUNT                      GET_TRUE_SPRITE_INDEX(ANIM_TAG_SAFARI_BAIT + 1)
+#define ANIM_TAG_LIBRA_WHEEL                (ANIM_SPRITES_START + 413)
+#define ANIM_TAG_LIBRA_SYMBOL               (ANIM_SPRITES_START + 414)
+#define ANIM_TAG_COUNT                      GET_TRUE_SPRITE_INDEX(ANIM_TAG_LIBRA_SYMBOL + 1)
 
 // battlers
 enum AnimBattler
@@ -608,7 +610,8 @@ enum AnimBattler
 #define B_ANIM_FORM_CHANGE_INSTANT      61
 #define B_ANIM_FORM_CHANGE_DISGUISE     62
 #define B_ANIM_HELD_ITEM_BERRY          63
-#define NUM_B_ANIMS_GENERAL             64
+#define B_ANIM_LIBRA_EVOLUTION          64
+#define NUM_B_ANIMS_GENERAL             65
 
 // special animations table (sBattleAnims_Special)
 #define B_ANIM_LVL_UP                   0

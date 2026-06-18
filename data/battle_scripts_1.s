@@ -3922,7 +3922,7 @@ BattleScript_LibraEvolutionPositive::
 BattleScript_LibraEvolutionPositiveAfterString:
 	waitmessage B_WAIT_TIME_LONG
 	handleformchange BS_SCRIPTING, 0
-	playanimation BS_SCRIPTING, B_ANIM_MEGA_EVOLUTION
+	playanimation BS_SCRIPTING, B_ANIM_LIBRA_EVOLUTION
 	waitanimation
 	handleformchange BS_SCRIPTING, 1
 	printstring STRINGID_LIBRAEVOEVOLVED
@@ -3938,7 +3938,7 @@ BattleScript_LibraEvolutionNegative::
 BattleScript_LibraEvolutionNegativeAfterString:
 	waitmessage B_WAIT_TIME_LONG
 	handleformchange BS_SCRIPTING, 0
-	playanimation BS_SCRIPTING, B_ANIM_MEGA_EVOLUTION
+	playanimation BS_SCRIPTING, B_ANIM_LIBRA_EVOLUTION
 	waitanimation
 	handleformchange BS_SCRIPTING, 1
 	printstring STRINGID_LIBRAEVOEVOLVED

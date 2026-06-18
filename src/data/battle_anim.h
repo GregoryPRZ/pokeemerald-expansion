@@ -1315,6 +1315,8 @@ const struct BattleAnimation gBattleAnimTable[ANIM_TAG_COUNT] =
     BATTLE_ANIMATION(ANIM_TAG_ENERGY_BALL, gBattleAnimSpriteGfx_EnergyBall, 0x0200, gBattleAnimSpritePal_EnergyBall),
     BATTLE_ANIMATION(ANIM_TAG_SEED_BROWN, gBattleAnimSpriteGfx_SeedBrown, 0x0080, gBattleAnimSpritePal_SeedBrown),
     BATTLE_ANIMATION(ANIM_TAG_FEINT, gBattleAnimSpriteGfx_Feint, 0x0800, gBattleAnimSpritePal_Feint),
+    BATTLE_ANIMATION(ANIM_TAG_LIBRA_SYMBOL, gBattleAnimSpriteGfx_LibraSymbol, 0x0800, gBattleAnimSpritePal_LibraSymbol),
+    BATTLE_ANIMATION(ANIM_TAG_LIBRA_WHEEL, gBattleAnimSpriteGfx_LibraWheel, 0x0800, gBattleAnimSpritePal_LibraWheel),
     BATTLE_ANIMATION(ANIM_TAG_MEGA_STONE, gBattleAnimSpriteGfx_MegaStone, 0x800, gBattleAnimSpritePal_MegaStone),
     BATTLE_ANIMATION(ANIM_TAG_MEGA_SYMBOL, gBattleAnimSpriteGfx_MegaSymbol, 0x0200, gBattleAnimSpritePal_MegaSymbol),
     BATTLE_ANIMATION(ANIM_TAG_MEGA_PARTICLES, gBattleAnimSpriteGfx_MegaParticles, 0x0180, gBattleAnimSpritePal_MegaParticles),

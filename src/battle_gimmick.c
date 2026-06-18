@@ -267,6 +267,7 @@ void LoadIndicatorSpritesGfx(void)
 {
     LoadSpritePalette(&sSpritePalette_MiscIndicator);
     LoadSpritePalette(&sSpritePalette_MegaIndicator);
+    LoadSpritePalette(&sSpritePalette_LibraIndicator);
     LoadSpritePalette(&sSpritePalette_TeraIndicator);
 }
 

@@ -1067,6 +1067,24 @@ const union AffineAnimCmd gSlackOffSquishAffineAnimCmds[] =
     AFFINEANIMCMD_END,
 };
 
+const struct SpriteTemplate gLibraWheelSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_LIBRA_WHEEL,
+    .paletteTag = ANIM_TAG_LIBRA_WHEEL,
+    .oam = &gOamData_AffineDouble_ObjBlend_64x64,
+    .affineAnims = gSpriteAffineAnimTable_LibraWheel,
+    .callback = AnimSpriteOnMonPos,
+};
+
+const struct SpriteTemplate gLibraSymbolSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_LIBRA_SYMBOL,
+    .paletteTag = ANIM_TAG_LIBRA_SYMBOL,
+    .oam = &gOamData_AffineDouble_ObjBlend_64x64,
+    .affineAnims = gSpriteAffineAnimTable_MegaSymbol,
+    .callback = AnimSpriteOnMonPos,
+};
+
 const struct SpriteTemplate gMegaStoneSpriteTemplate =
 {
     .tileTag = ANIM_TAG_MEGA_STONE,
@@ -1075,6 +1093,7 @@ const struct SpriteTemplate gMegaStoneSpriteTemplate =
     .affineAnims = gAffineAnims_LusterPurgeCircle,
     .callback = AnimSpriteOnMonPos,
 };
+
 
 const struct SpriteTemplate gMegaParticlesSpriteTemplate =
 {

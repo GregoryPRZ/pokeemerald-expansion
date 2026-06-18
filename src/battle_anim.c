@@ -227,6 +227,7 @@ static const u8* const sBattleAnims_General[NUM_B_ANIMS_GENERAL] =
     [B_ANIM_INGRAIN_HEAL]           = gBattleAnimGeneral_IngrainHeal,
     [B_ANIM_WISH_HEAL]              = gBattleAnimGeneral_WishHeal,
     [B_ANIM_MEGA_EVOLUTION]         = gBattleAnimGeneral_MegaEvolution,
+    [B_ANIM_LIBRA_EVOLUTION]         = gBattleAnimGeneral_LibraEvolution,
     [B_ANIM_ILLUSION_OFF]           = gBattleAnimGeneral_IllusionOff,
     [B_ANIM_FORM_CHANGE]            = gBattleAnimGeneral_FormChange,
     [B_ANIM_FORM_CHANGE_INSTANT]    = gBattleAnimGeneral_FormChangeInstant,
@@ -388,6 +389,7 @@ void LaunchBattleAnimation(u32 animType, u32 animId)
         case B_ANIM_DOOM_DESIRE_HIT:
         case B_ANIM_WISH_HEAL:
         case B_ANIM_MEGA_EVOLUTION:
+        case B_ANIM_LIBRA_EVOLUTION:
         case B_ANIM_PRIMAL_REVERSION:
         case B_ANIM_POWER_CONSTRUCT:
         case B_ANIM_ULTRA_BURST:

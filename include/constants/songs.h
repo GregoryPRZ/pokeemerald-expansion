@@ -915,8 +915,9 @@
 #define MUS_HG_OBTAIN_CASTLE_POINTS 974
 #define MUS_HG_OBTAIN_B_POINTS 975
 #define MUS_HG_WIN_MINIGAME 976
+#define MUS_VS_TEST     977
 
-#define END_MUS                     MUS_HG_WIN_MINIGAME
+#define END_MUS                     MUS_VS_TEST
 
 #define MUS_ROUTE118                0x7FFF  // Map is split into 2 music sections. controlled by GetCurrLocationDefaultMusic().
 

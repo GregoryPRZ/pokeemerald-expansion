@@ -31,6 +31,12 @@ const u16 gBattleAnimSpritePal_EnergyBall[] = INCGFX_U16("graphics/battle_anims/
 const u32 gBattleAnimSpriteGfx_MegaStone[] = INCGFX_U32("graphics/battle_anims/sprites/mega_stone.png", ".4bpp.smol");
 const u16 gBattleAnimSpritePal_MegaStone[] = INCGFX_U16("graphics/battle_anims/sprites/mega_stone.png", ".gbapal");
 
+const u32 gBattleAnimSpriteGfx_LibraWheel[] = INCGFX_U32("graphics/battle_anims/sprites/libra_wheel.png", ".4bpp.smol");
+const u16 gBattleAnimSpritePal_LibraWheel[] = INCGFX_U16("graphics/battle_anims/sprites/libra_wheel.png", ".gbapal");
+
+const u32 gBattleAnimSpriteGfx_LibraSymbol[] = INCGFX_U32("graphics/battle_anims/sprites/libra_symbol.png", ".4bpp.smol");
+const u16 gBattleAnimSpritePal_LibraSymbol[] = INCGFX_U16("graphics/battle_anims/sprites/libra_symbol.png", ".gbapal");
+
 const u32 gBattleAnimSpriteGfx_MegaParticles[] = INCGFX_U32("graphics/battle_anims/sprites/mega_particles.png", ".4bpp.smol");
 const u16 gBattleAnimSpritePal_MegaParticles[] = INCGFX_U16("graphics/battle_anims/sprites/mega_particles.png", ".gbapal");
 

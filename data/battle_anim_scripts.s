@@ -29415,6 +29415,34 @@ MegaEvolutionSpinEffect:
 	delay 2
 	return
 
+gBattleAnimGeneral_LibraEvolution::
+	createvisualtask AnimTask_BlendParticle, 5, ANIM_TAG_ELECTRICITY, 0, 12, 12, RGB(24, 0, 24)
+	monbg ANIM_ATTACKER
+	setalpha 12, 8
+	loopsewithpan SE_M_BARRIER, SOUND_PAN_ATTACKER, 13, 3
+	blend_color_cycle selector=F_PAL_ATTACKER, delay=0, num_blends=6, initial_blend_y=0, target_blend_y=11, color=RGB_PURPLE
+	call MegaEvolutionParticles
+	call MegaEvolutionParticles
+	call MegaEvolutionParticles
+	waitforvisualfinish
+	playsewithpan SE_M_COSMIC_POWER, SOUND_PAN_ATTACKER
+	createsprite gLibraWheelSpriteTemplate, ANIM_ATTACKER, 41, 0, 0, 0, 0
+	delay 20
+	createvisualtask AnimTask_BlendBattleAnimPalExclude, 5, 5, 2, 0, 16, RGB_WHITEALPHA
+	waitforvisualfinish
+	createvisualtask SoundTask_PlayNormalCry, 0
+	createvisualtask AnimTask_HideSwapSprite, 2
+	createvisualtask AnimTask_BlendBattleAnimPalExclude, 5, 5, 2, 16, 0, RGB_WHITEALPHA
+	createvisualtask AnimTask_HorizontalShake, 5, ANIM_TARGET, 5, 14
+	playsewithpan SE_M_DETECT, SOUND_PAN_ATTACKER
+	createsprite gLibraSymbolSpriteTemplate ANIM_ATTACKER, 3, 0, 0, ANIM_ATTACKER
+	delay 2
+	call MegaEvolutionSpinEffect
+	waitforvisualfinish
+	clearmonbg ANIM_ATK_PARTNER
+	blendoff
+	end
+
 gBattleAnimGeneral_TeraCharge::
 	createvisualtask AnimTask_HideOpponentShadows, 2 @ Hide opponent shadows so they don't flicker between battle anims
 	monbg ANIM_ATTACKER

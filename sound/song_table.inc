@@ -983,6 +983,7 @@ gSongTable::
 	song mus_hg_obtain_castle_points, MUSIC_PLAYER_SE2, 2
 	song mus_hg_obtain_b_points, MUSIC_PLAYER_SE2, 2
 	song mus_hg_win_minigame, MUSIC_PLAYER_SE2, 2
+	song mus_vs_test, MUSIC_PLAYER_BGM, 0
 
 	.align 2
 dummy_song_header:
