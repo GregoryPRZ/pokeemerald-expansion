@@ -1,7 +1,7 @@
 {
-  "id": "MAP_BATTLE_FRONTIER_BATTLE_DOME_BATTLE_ROOM",
-  "name": "BattleFrontier_BattleDomeBattleRoom",
-  "layout": "LAYOUT_BATTLE_FRONTIER_BATTLE_DOME_BATTLE_ROOM",
+  "id": "MAP_EMERALD_TOWER_BATTLE_ARENA",
+  "name": "EmeraldTower_BattleArena",
+  "layout": "LAYOUT_EMERALD_TOWER_BATTLE_ARENA",
   "music": "MUS_B_DOME",
   "region_map_section": "MAPSEC_BATTLE_FRONTIER",
   "requires_flash": false,
