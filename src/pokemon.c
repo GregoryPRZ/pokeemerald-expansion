@@ -72,6 +72,7 @@
 #include "constants/songs.h"
 #include "constants/trainers.h"
 #include "constants/union_room.h"
+#include "constants/vars.h"
 #include "constants/weather.h"
 
 extern u16 gSpecialVar_ItemId;
@@ -5253,6 +5254,11 @@ bool32 IsSpeciesInHoennDex(enum Species species)
 
 u16 GetBattleBGM(void)
 {
+    u16 emeraldTowerBattleMusic = VarGet(VAR_EMERALD_TOWER_BATTLE_MUSIC);
+
+    if (emeraldTowerBattleMusic != 0)
+        return emeraldTowerBattleMusic;
+
     if (gBattleTypeFlags & BATTLE_TYPE_LEGENDARY)
     {
         switch (GetMonData(&gParties[B_TRAINER_OPPONENT_A][0], MON_DATA_SPECIES))

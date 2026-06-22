@@ -51,7 +51,57 @@
     F(STEEL_WING) \
     F(SKILL_SWAP) \
     F(SNATCH) \
-    F(OVERHEAT)
+    F(OVERHEAT) \
+    F(TAKE_DOWN) \
+    F(CHARM) \
+    F(ACID_SPRAY) \
+    F(TRAILBLAZE) \
+    F(MAGICAL_LEAF) \
+    F(VENOSHOCK) \
+    F(ENDURE) \
+    F(FALSE_SWIPE) \
+    F(BODY_SLAM) \
+    F(SLEEP_TALK) \
+    F(SEED_BOMB) \
+    F(GRASS_KNOT) \
+    F(SWORDS_DANCE) \
+    F(SUBSTITUTE) \
+    F(ENERGY_BALL) \
+    F(HELPING_HAND) \
+    F(GRASSY_TERRAIN) \
+    F(GRASS_PLEDGE) \
+    F(LEAF_STORM) \
+    F(TERA_BLAST) \
+    F(KNOCK_OFF) \
+    F(WEATHER_BALL) \
+    F(GRASSY_GLIDE) \
+    F(DOUBLE_EDGE) \
+    F(CURSE) \
+    F(SCARY_FACE) \
+    F(BULLDOZE) \
+    F(POISON_JAB) \
+    F(STOMPING_TANTRUM) \
+    F(AMNESIA) \
+    F(EARTH_POWER) \
+    F(GIGA_IMPACT) \
+    F(FRENZY_PLANT) \
+    F(PETAL_BLIZZARD) \
+    F(FIRE_FANG) \
+    F(FIRE_SPIN) \
+    F(METAL_CLAW) \
+    F(SWIFT) \
+    F(FLAME_CHARGE) \
+    F(FLING) \
+    F(DRAGON_TAIL) \
+    F(SHADOW_CLAW) \
+    F(FIRE_PUNCH) \
+    F(THUNDER_PUNCH) \
+    F(ROCK_SLIDE) \
+    F(DRAGON_DANCE) \
+    F(WILL_O_WISP) \
+    F(CRUNCH) \
+    F(DRAGON_PULSE) \
+    F(HEAT_WAVE)
 
 #define FOREACH_HM(F) \
     F(CUT) \

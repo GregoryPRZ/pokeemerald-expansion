@@ -1,2 +1,149 @@
 EmeraldTower_BattleArena_MapScripts::
+	map_script MAP_SCRIPT_ON_FRAME_TABLE, EmeraldTower_BattleArena_OnFrame
+	map_script MAP_SCRIPT_ON_WARP_INTO_MAP_TABLE, EmeraldTower_BattleArena_OnWarp
 	.byte 0
+
+EmeraldTower_BattleArena_OnWarp:
+	map_script_2 VAR_TEMP_0, 0, EmeraldTower_BattleArena_EventScript_Setup
+	.2byte 0
+
+EmeraldTower_BattleArena_OnFrame:
+	map_script_2 VAR_TEMP_0, 1, EmeraldTower_BattleArena_EventScript_EnterArena
+	.2byte 0
+
+EmeraldTower_BattleArena_EventScript_Setup::
+	setvar VAR_TEMP_0, 1
+	end
+
+EmeraldTower_BattleArena_EventScript_EnterArena::
+	setvar VAR_TEMP_0, 2
+	lockall
+	applymovement LOCALID_PLAYER, EmeraldTower_BattleArena_Movement_PlayerEnterRing
+	waitmovement 0
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 1, EmeraldTower_BattleArena_EventScript_BattleRoxanne
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 2, EmeraldTower_BattleArena_EventScript_BattleBrawly
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 3, EmeraldTower_BattleArena_EventScript_BattleWattson
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 4, EmeraldTower_BattleArena_EventScript_BattleFlannery
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 5, EmeraldTower_BattleArena_EventScript_BattleNorman
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 6, EmeraldTower_BattleArena_EventScript_BattleWinona
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 7, EmeraldTower_BattleArena_EventScript_BattleTateAndLiza
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 8, EmeraldTower_BattleArena_EventScript_BattleJuan
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 9, EmeraldTower_BattleArena_EventScript_BattleSidney
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 10, EmeraldTower_BattleArena_EventScript_BattlePhoebe
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 11, EmeraldTower_BattleArena_EventScript_BattleGlacia
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 12, EmeraldTower_BattleArena_EventScript_BattleDrake
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 13, EmeraldTower_BattleArena_EventScript_BattleWallace
+	goto_if_eq VAR_EMERALD_TOWER_SELECTED_TRAINER, 14, EmeraldTower_BattleArena_EventScript_BattleSteven
+	goto EmeraldTower_BattleArena_EventScript_ReturnToLobby
+
+EmeraldTower_BattleArena_EventScript_BattleRoxanne::
+	cleartrainerflag TRAINER_ROXANNE_5
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_ROXANNE_5, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleBrawly::
+	cleartrainerflag TRAINER_BRAWLY_5
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_BRAWLY_5, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleWattson::
+	cleartrainerflag TRAINER_WATTSON_5
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_WATTSON_5, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleFlannery::
+	cleartrainerflag TRAINER_FLANNERY_5
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_FLANNERY_5, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleNorman::
+	cleartrainerflag TRAINER_NORMAN_5
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_NORMAN_5, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleWinona::
+	cleartrainerflag TRAINER_WINONA_5
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_WINONA_5, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleTateAndLiza::
+	cleartrainerflag TRAINER_TATE_AND_LIZA_5
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_TATE_AND_LIZA_5, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleJuan::
+	cleartrainerflag TRAINER_JUAN_5
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_JUAN_5, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleSidney::
+	cleartrainerflag TRAINER_SIDNEY
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_SIDNEY, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattlePhoebe::
+	cleartrainerflag TRAINER_PHOEBE
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_PHOEBE, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleGlacia::
+	cleartrainerflag TRAINER_GLACIA
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_GLACIA, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleDrake::
+	cleartrainerflag TRAINER_DRAKE
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_DRAKE, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleWallace::
+	cleartrainerflag TRAINER_WALLACE
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_WALLACE, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_BattleSteven::
+	cleartrainerflag TRAINER_STEVEN
+	call EmeraldTower_BattleArena_EventScript_FaceOpponents
+	trainerbattle TRAINER_BATTLE_CONTINUE_SCRIPT, LOCALID_DOME_OPPONENT, TRAINER_STEVEN, EmeraldTower_BattleArena_Text_TowerBattleIntro, EmeraldTower_BattleArena_Text_TowerBattleDefeat, EmeraldTower_BattleArena_EventScript_BattleDone, LOCALID_NONE, TRAINER_NONE, NULL, NULL, NULL, NULL, NULL, FALSE, TRUE, FALSE, FALSE
+
+EmeraldTower_BattleArena_EventScript_FaceOpponents::
+	applymovement LOCALID_PLAYER, EmeraldTower_BattleArena_Movement_PlayerFaceRight
+	applymovement LOCALID_DOME_OPPONENT, EmeraldTower_BattleArena_Movement_OpponentFaceLeft
+	waitmovement 0
+	return
+
+EmeraldTower_BattleArena_EventScript_BattleDone::
+	msgbox EmeraldTower_BattleArena_Text_BattleDone, MSGBOX_DEFAULT
+
+EmeraldTower_BattleArena_EventScript_ReturnToLobby::
+	setvar VAR_EMERALD_TOWER_SELECTED_TRAINER, 0
+	setvar VAR_TEMP_0, 0
+	warp MAP_EMERALD_TOWER_LOBBY, 11, 11
+	waitstate
+	releaseall
+	end
+
+EmeraldTower_BattleArena_Movement_PlayerEnterRing:
+	walk_fast_up
+	walk_fast_up
+	walk_fast_right
+	walk_fast_right
+	step_end
+
+EmeraldTower_BattleArena_Movement_PlayerFaceRight:
+	walk_in_place_faster_right
+	step_end
+
+EmeraldTower_BattleArena_Movement_OpponentFaceLeft:
+	walk_in_place_faster_left
+	step_end
+
+EmeraldTower_BattleArena_Text_TowerBattleIntro:
+	.string "Show me your tower strategy.$"
+
+EmeraldTower_BattleArena_Text_TowerBattleDefeat:
+	.string "That was a clean win.$"
+
+EmeraldTower_BattleArena_Text_BattleDone:
+	.string "The match is over.\p"
+	.string "The host will return you to the lobby.$"

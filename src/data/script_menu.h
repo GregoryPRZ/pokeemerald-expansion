@@ -1122,6 +1122,118 @@ static const struct MenuAction sMultichoiceList_HOF_Eggs_Victories_Quit[] = {
     {gText_ShopQuit}
 };
 
+static const struct MenuAction sMultichoiceList_EmeraldTowerBattleMusic[] = {
+    {COMPOUND_STRING("DEFAULT")},
+    {COMPOUND_STRING("EMERALD")},
+    {COMPOUND_STRING("FRLG")},
+    {COMPOUND_STRING("DPPT")},
+    {COMPOUND_STRING("HGSS")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerBattleMusicEmerald[] = {
+    {COMPOUND_STRING("TRAINER")},
+    {COMPOUND_STRING("GYM LEADER")},
+    {COMPOUND_STRING("ELITE FOUR")},
+    {COMPOUND_STRING("CHAMPION")},
+    {COMPOUND_STRING("FRONTIER BRAIN")},
+    {COMPOUND_STRING("RIVAL")},
+    {COMPOUND_STRING("LEGENDARY")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerBattleMusicFrlg[] = {
+    {COMPOUND_STRING("TRAINER")},
+    {COMPOUND_STRING("WILD")},
+    {COMPOUND_STRING("GYM LEADER")},
+    {COMPOUND_STRING("CHAMPION")},
+    {COMPOUND_STRING("DEOXYS")},
+    {COMPOUND_STRING("MEWTWO")},
+    {COMPOUND_STRING("LEGENDARY")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerBattleMusicDppt[] = {
+    {COMPOUND_STRING("TRAINER")},
+    {COMPOUND_STRING("WILD")},
+    {COMPOUND_STRING("GYM LEADER")},
+    {COMPOUND_STRING("ELITE FOUR")},
+    {COMPOUND_STRING("CHAMPION")},
+    {COMPOUND_STRING("RIVAL")},
+    {COMPOUND_STRING("GALACTIC")},
+    {COMPOUND_STRING("GALACTIC CMD")},
+    {COMPOUND_STRING("GALACTIC BOSS")},
+    {COMPOUND_STRING("LEGENDS")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerBattleMusicDpptLegend[] = {
+    {COMPOUND_STRING("LAKE TRIO")},
+    {COMPOUND_STRING("DIALGA/PALKIA")},
+    {COMPOUND_STRING("ARCEUS")},
+    {COMPOUND_STRING("LEGENDARY")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerBattleMusicHgss[] = {
+    {COMPOUND_STRING("TRAINER")},
+    {COMPOUND_STRING("WILD")},
+    {COMPOUND_STRING("GYM LEADER")},
+    {COMPOUND_STRING("RIVAL")},
+    {COMPOUND_STRING("ROCKET")},
+    {COMPOUND_STRING("CHAMPION")},
+    {COMPOUND_STRING("KANTO")},
+    {COMPOUND_STRING("LEGENDS")},
+    {COMPOUND_STRING("FRONTIER BRAIN")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerBattleMusicHgssKanto[] = {
+    {COMPOUND_STRING("TRAINER")},
+    {COMPOUND_STRING("WILD")},
+    {COMPOUND_STRING("GYM LEADER")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerBattleMusicHgssLegend[] = {
+    {COMPOUND_STRING("SUICUNE")},
+    {COMPOUND_STRING("ENTEI")},
+    {COMPOUND_STRING("RAIKOU")},
+    {COMPOUND_STRING("HO-OH")},
+    {COMPOUND_STRING("LUGIA")},
+    {COMPOUND_STRING("KYOGRE/GROUDON")},
+    {COMPOUND_STRING("ARCEUS")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerBattleCategory[] = {
+    {COMPOUND_STRING("HOENN LEADERS")},
+    {COMPOUND_STRING("HOENN LEAGUE")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerHoennLeaders[] = {
+    {COMPOUND_STRING("ROXANNE")},
+    {COMPOUND_STRING("BRAWLY")},
+    {COMPOUND_STRING("WATTSON")},
+    {COMPOUND_STRING("FLANNERY")},
+    {COMPOUND_STRING("NORMAN")},
+    {COMPOUND_STRING("WINONA")},
+    {COMPOUND_STRING("TATE&LIZA")},
+    {COMPOUND_STRING("JUAN")},
+    {gText_Exit},
+};
+
+static const struct MenuAction sMultichoiceList_EmeraldTowerHoennLeague[] = {
+    {COMPOUND_STRING("SIDNEY")},
+    {COMPOUND_STRING("PHOEBE")},
+    {COMPOUND_STRING("GLACIA")},
+    {COMPOUND_STRING("DRAKE")},
+    {COMPOUND_STRING("WALLACE")},
+    {COMPOUND_STRING("STEVEN")},
+    {gText_Exit},
+};
+
 static const struct MenuAction MultichoiceList_Exit[] =
 {
     {gText_Exit},
@@ -1294,6 +1406,17 @@ static const struct MultichoiceListStruct sMultichoiceLists[] =
     [MULTI_HOF_VICTORIES_QUIT]                         = MULTICHOICE(sMultichoiceList_HOF_Victories_Quit),
     [MULTI_EGGS_VICTORIES_QUIT]                        = MULTICHOICE(sMultichoiceList_Eggs_Victories_Quit),
     [MULTI_HOF_EGGS_VICTORIES_QUIT]                    = MULTICHOICE(sMultichoiceList_HOF_Eggs_Victories_Quit),
+    [MULTI_EMERALD_TOWER_BATTLE_MUSIC]                 = MULTICHOICE(sMultichoiceList_EmeraldTowerBattleMusic),
+    [MULTI_EMERALD_TOWER_BATTLE_MUSIC_EMERALD]         = MULTICHOICE(sMultichoiceList_EmeraldTowerBattleMusicEmerald),
+    [MULTI_EMERALD_TOWER_BATTLE_MUSIC_FRLG]            = MULTICHOICE(sMultichoiceList_EmeraldTowerBattleMusicFrlg),
+    [MULTI_EMERALD_TOWER_BATTLE_MUSIC_DPPT]            = MULTICHOICE(sMultichoiceList_EmeraldTowerBattleMusicDppt),
+    [MULTI_EMERALD_TOWER_BATTLE_MUSIC_DPPT_LEGEND]     = MULTICHOICE(sMultichoiceList_EmeraldTowerBattleMusicDpptLegend),
+    [MULTI_EMERALD_TOWER_BATTLE_MUSIC_HGSS]            = MULTICHOICE(sMultichoiceList_EmeraldTowerBattleMusicHgss),
+    [MULTI_EMERALD_TOWER_BATTLE_MUSIC_HGSS_KANTO]      = MULTICHOICE(sMultichoiceList_EmeraldTowerBattleMusicHgssKanto),
+    [MULTI_EMERALD_TOWER_BATTLE_MUSIC_HGSS_LEGEND]     = MULTICHOICE(sMultichoiceList_EmeraldTowerBattleMusicHgssLegend),
+    [MULTI_EMERALD_TOWER_BATTLE_CATEGORY]              = MULTICHOICE(sMultichoiceList_EmeraldTowerBattleCategory),
+    [MULTI_EMERALD_TOWER_HOENN_LEADERS]                = MULTICHOICE(sMultichoiceList_EmeraldTowerHoennLeaders),
+    [MULTI_EMERALD_TOWER_HOENN_LEAGUE]                 = MULTICHOICE(sMultichoiceList_EmeraldTowerHoennLeague),
 };
 
 const u8 *const gStdStrings[] =

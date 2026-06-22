@@ -2502,6 +2502,78 @@ void ShowScrollableMultichoice(void)
         task->tScrollOffset = sElevatorScroll;
         task->tSelectedRow = sElevatorCursorPos;
         break;
+    case SCROLL_MULTI_EMERALD_TOWER_MUSIC_EMERALD:
+    case SCROLL_MULTI_EMERALD_TOWER_MUSIC_FRLG:
+    case SCROLL_MULTI_EMERALD_TOWER_MUSIC_HGSS_LEGEND:
+        task->tMaxItemsOnScreen = MAX_SCROLL_MULTI_ON_SCREEN;
+        task->tNumItems = 8;
+        task->tLeft = 13;
+        task->tTop = 1;
+        task->tWidth = 16;
+        task->tHeight = 12;
+        task->tKeepOpenAfterSelect = FALSE;
+        task->tTaskId = taskId;
+        break;
+    case SCROLL_MULTI_EMERALD_TOWER_HOENN_LEAGUE:
+        task->tMaxItemsOnScreen = MAX_SCROLL_MULTI_ON_SCREEN;
+        task->tNumItems = 7;
+        task->tLeft = 14;
+        task->tTop = 1;
+        task->tWidth = 15;
+        task->tHeight = 12;
+        task->tKeepOpenAfterSelect = FALSE;
+        task->tTaskId = taskId;
+        break;
+    case SCROLL_MULTI_EMERALD_TOWER_MUSIC_DPPT:
+        task->tMaxItemsOnScreen = MAX_SCROLL_MULTI_ON_SCREEN;
+        task->tNumItems = 11;
+        task->tLeft = 12;
+        task->tTop = 1;
+        task->tWidth = 17;
+        task->tHeight = 12;
+        task->tKeepOpenAfterSelect = FALSE;
+        task->tTaskId = taskId;
+        break;
+    case SCROLL_MULTI_EMERALD_TOWER_MUSIC_DPPT_LEGEND:
+        task->tMaxItemsOnScreen = 5;
+        task->tNumItems = 5;
+        task->tLeft = 11;
+        task->tTop = 1;
+        task->tWidth = 18;
+        task->tHeight = 10;
+        task->tKeepOpenAfterSelect = FALSE;
+        task->tTaskId = taskId;
+        break;
+    case SCROLL_MULTI_EMERALD_TOWER_MUSIC_HGSS:
+        task->tMaxItemsOnScreen = MAX_SCROLL_MULTI_ON_SCREEN;
+        task->tNumItems = 10;
+        task->tLeft = 12;
+        task->tTop = 1;
+        task->tWidth = 17;
+        task->tHeight = 12;
+        task->tKeepOpenAfterSelect = FALSE;
+        task->tTaskId = taskId;
+        break;
+    case SCROLL_MULTI_EMERALD_TOWER_MUSIC_HGSS_KANTO:
+        task->tMaxItemsOnScreen = 4;
+        task->tNumItems = 4;
+        task->tLeft = 12;
+        task->tTop = 1;
+        task->tWidth = 17;
+        task->tHeight = 8;
+        task->tKeepOpenAfterSelect = FALSE;
+        task->tTaskId = taskId;
+        break;
+    case SCROLL_MULTI_EMERALD_TOWER_HOENN_LEADERS:
+        task->tMaxItemsOnScreen = MAX_SCROLL_MULTI_ON_SCREEN;
+        task->tNumItems = 9;
+        task->tLeft = 14;
+        task->tTop = 1;
+        task->tWidth = 15;
+        task->tHeight = 12;
+        task->tKeepOpenAfterSelect = FALSE;
+        task->tTaskId = taskId;
+        break;
     default:
         gSpecialVar_Result = MULTI_B_PRESSED;
         DestroyTask(taskId);
@@ -2689,7 +2761,104 @@ static const u8 *const sScrollableMultichoiceOptions[][MAX_SCROLL_MULTI_LENGTH] 
         gText_2F,
         gText_1F,
         gText_Exit,
-    }
+    },
+    [SCROLL_MULTI_EMERALD_TOWER_MUSIC_EMERALD] =
+    {
+        COMPOUND_STRING("TRAINER"),
+        COMPOUND_STRING("GYM LEADER"),
+        COMPOUND_STRING("ELITE FOUR"),
+        COMPOUND_STRING("CHAMPION"),
+        COMPOUND_STRING("FRONTIER BRAIN"),
+        COMPOUND_STRING("RIVAL"),
+        COMPOUND_STRING("LEGENDARY"),
+        gText_Exit,
+    },
+    [SCROLL_MULTI_EMERALD_TOWER_MUSIC_FRLG] =
+    {
+        COMPOUND_STRING("TRAINER"),
+        COMPOUND_STRING("WILD"),
+        COMPOUND_STRING("GYM LEADER"),
+        COMPOUND_STRING("CHAMPION"),
+        COMPOUND_STRING("DEOXYS"),
+        COMPOUND_STRING("MEWTWO"),
+        COMPOUND_STRING("LEGENDARY"),
+        gText_Exit,
+    },
+    [SCROLL_MULTI_EMERALD_TOWER_MUSIC_DPPT] =
+    {
+        COMPOUND_STRING("TRAINER"),
+        COMPOUND_STRING("WILD"),
+        COMPOUND_STRING("GYM LEADER"),
+        COMPOUND_STRING("ELITE FOUR"),
+        COMPOUND_STRING("CHAMPION"),
+        COMPOUND_STRING("RIVAL"),
+        COMPOUND_STRING("GALACTIC"),
+        COMPOUND_STRING("GALACTIC CMD"),
+        COMPOUND_STRING("GALACTIC BOSS"),
+        COMPOUND_STRING("LEGENDS"),
+        gText_Exit,
+    },
+    [SCROLL_MULTI_EMERALD_TOWER_MUSIC_DPPT_LEGEND] =
+    {
+        COMPOUND_STRING("LAKE TRIO"),
+        COMPOUND_STRING("DIALGA/PALKIA"),
+        COMPOUND_STRING("ARCEUS"),
+        COMPOUND_STRING("LEGENDARY"),
+        gText_Exit,
+    },
+    [SCROLL_MULTI_EMERALD_TOWER_MUSIC_HGSS] =
+    {
+        COMPOUND_STRING("TRAINER"),
+        COMPOUND_STRING("WILD"),
+        COMPOUND_STRING("GYM LEADER"),
+        COMPOUND_STRING("RIVAL"),
+        COMPOUND_STRING("ROCKET"),
+        COMPOUND_STRING("CHAMPION"),
+        COMPOUND_STRING("KANTO"),
+        COMPOUND_STRING("LEGENDS"),
+        COMPOUND_STRING("FRONTIER BRAIN"),
+        gText_Exit,
+    },
+    [SCROLL_MULTI_EMERALD_TOWER_MUSIC_HGSS_KANTO] =
+    {
+        COMPOUND_STRING("TRAINER"),
+        COMPOUND_STRING("WILD"),
+        COMPOUND_STRING("GYM LEADER"),
+        gText_Exit,
+    },
+    [SCROLL_MULTI_EMERALD_TOWER_MUSIC_HGSS_LEGEND] =
+    {
+        COMPOUND_STRING("SUICUNE"),
+        COMPOUND_STRING("ENTEI"),
+        COMPOUND_STRING("RAIKOU"),
+        COMPOUND_STRING("HO-OH"),
+        COMPOUND_STRING("LUGIA"),
+        COMPOUND_STRING("KYOGRE/GROUDON"),
+        COMPOUND_STRING("ARCEUS"),
+        gText_Exit,
+    },
+    [SCROLL_MULTI_EMERALD_TOWER_HOENN_LEADERS] =
+    {
+        COMPOUND_STRING("ROXANNE"),
+        COMPOUND_STRING("BRAWLY"),
+        COMPOUND_STRING("WATTSON"),
+        COMPOUND_STRING("FLANNERY"),
+        COMPOUND_STRING("NORMAN"),
+        COMPOUND_STRING("WINONA"),
+        COMPOUND_STRING("TATE&LIZA"),
+        COMPOUND_STRING("JUAN"),
+        gText_Exit,
+    },
+    [SCROLL_MULTI_EMERALD_TOWER_HOENN_LEAGUE] =
+    {
+        COMPOUND_STRING("SIDNEY"),
+        COMPOUND_STRING("PHOEBE"),
+        COMPOUND_STRING("GLACIA"),
+        COMPOUND_STRING("DRAKE"),
+        COMPOUND_STRING("WALLACE"),
+        COMPOUND_STRING("STEVEN"),
+        gText_Exit,
+    },
 };
 
 static void Task_ShowScrollableMultichoice(u8 taskId)

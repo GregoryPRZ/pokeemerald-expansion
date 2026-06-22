@@ -2,7 +2,7 @@
   "id": "MAP_EMERALD_TOWER_LOBBY",
   "name": "EmeraldTower_Lobby",
   "layout": "LAYOUT_EMERALD_TOWER_LOBBY",
-  "music": "MUS_B_DOME_LOBBY",
+  "music": "MUS_PL_B_FACTORY",
   "region_map_section": "MAPSEC_BATTLE_FRONTIER",
   "requires_flash": false,
   "weather": "WEATHER_NONE",
@@ -119,7 +119,20 @@
       "flag": "0"
     },
     {
-      "graphics_id": "OBJ_EVENT_GFX_TEALA",
+      "graphics_id": "OBJ_EVENT_GFX_SPECIES(DRIFBLIM)",
+      "x": 7,
+      "y": 11,
+      "elevation": 0,
+      "movement_type": "MOVEMENT_TYPE_NONE",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "EmeraldTower_Lobby_EventScript_BattleMusicNpc",
+      "flag": "0"
+    },
+    {
+      "graphics_id": "OBJ_EVENT_GFX_GENTLEMAN",
       "x": 5,
       "y": 10,
       "elevation": 0,
@@ -128,7 +141,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "EmeraldTower_Lobby_EventScript_Recruiter",
+      "script": "EmeraldTower_Lobby_EventScript_BattleHost",
       "flag": "0"
     }
   ],
