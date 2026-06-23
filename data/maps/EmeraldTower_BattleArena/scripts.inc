@@ -120,7 +120,7 @@ EmeraldTower_BattleArena_EventScript_ReturnToLobby::
 	setvar VAR_TEMP_0, 0
 	warp MAP_EMERALD_TOWER_LOBBY, 11, 11
 	waitstate
-	releaseall
+	release
 	end
 
 EmeraldTower_BattleArena_Movement_PlayerEnterRing:
