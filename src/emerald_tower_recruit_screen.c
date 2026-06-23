@@ -2,6 +2,7 @@
 #include "battle.h"
 #include "battle_factory_screen.h"
 #include "battle_factory.h"
+#include "comfy_anim.h"
 #include "sprite.h"
 #include "event_data.h"
 #include "overworld.h"
@@ -123,6 +124,8 @@ struct FactorySelectScreen
     u8 fadeSpeciesNameCoeffDelay;
     u8 fadeSpeciesNameCoeff;
     u8 faceSpeciesNameDelay;
+    u8 cursorAnimX;
+    u8 menuCursorAnimY;
 };
 
 struct SwapScreenAction
@@ -179,6 +182,10 @@ static void Select_PrintSelectMonString(void);
 static void Select_PrintMonSpecies(void);
 static void Select_PrintMonCategory(void);
 static void Select_PrintRentalPkmnString(void);
+static void Select_StartCursorAnimX(s16 targetX);
+static void Select_StartMenuCursorAnimY(s16 targetY);
+static void Select_UpdateComfyCursorAnims(void);
+static void Select_ReleaseComfyCursorAnims(void);
 static void Select_CopyMonsToPlayerParty(void);
 static void Select_ShowChosenMons(void);
 static void Select_ShowYesNoOptions(void);
@@ -1068,11 +1075,12 @@ static void SpriteCB_Pokeball(struct Sprite *sprite)
 
 static void CB2_SelectScreen(void)
 {
+    RunTasks();
+    Select_UpdateComfyCursorAnims();
     AnimateSprites();
     BuildOamBuffer();
     RunTextPrinters();
     UpdatePaletteFade();
-    RunTasks();
 }
 
 static void VBlankCB_SelectScreen(void)
@@ -1080,6 +1088,97 @@ static void VBlankCB_SelectScreen(void)
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
+}
+
+static void Select_StartCursorAnimX(s16 targetX)
+{
+    struct ComfyAnimEasingConfig config;
+
+    if (sFactorySelectScreen->cursorAnimX != INVALID_COMFY_ANIM)
+        ReleaseComfyAnim(sFactorySelectScreen->cursorAnimX);
+
+    InitComfyAnimConfig_Easing(&config);
+    config.durationFrames = 8;
+    config.easingFunc = ComfyAnimEasing_EaseOutCubic;
+    config.from = Q_24_8(gSprites[sFactorySelectScreen->cursorSpriteId].x);
+    config.to = Q_24_8(targetX);
+    sFactorySelectScreen->cursorAnimX = CreateComfyAnim_Easing(&config);
+}
+
+static void Select_StartMenuCursorAnimY(s16 targetY)
+{
+    struct ComfyAnimEasingConfig config;
+
+    if (sFactorySelectScreen->menuCursorAnimY != INVALID_COMFY_ANIM)
+        ReleaseComfyAnim(sFactorySelectScreen->menuCursorAnimY);
+
+    InitComfyAnimConfig_Easing(&config);
+    config.durationFrames = 6;
+    config.easingFunc = ComfyAnimEasing_EaseOutCubic;
+    config.from = Q_24_8(gSprites[sFactorySelectScreen->menuCursor1SpriteId].y);
+    config.to = Q_24_8(targetY);
+    sFactorySelectScreen->menuCursorAnimY = CreateComfyAnim_Easing(&config);
+}
+
+static void Select_UpdateComfyCursorAnims(void)
+{
+    AdvanceComfyAnimations();
+
+    if (sFactorySelectScreen->cursorAnimX != INVALID_COMFY_ANIM)
+    {
+        struct ComfyAnim *anim = &gComfyAnims[sFactorySelectScreen->cursorAnimX];
+
+        if (anim->inUse)
+        {
+            gSprites[sFactorySelectScreen->cursorSpriteId].x = ReadComfyAnimValueSmooth(anim);
+            if (anim->completed)
+            {
+                ReleaseComfyAnim(sFactorySelectScreen->cursorAnimX);
+                sFactorySelectScreen->cursorAnimX = INVALID_COMFY_ANIM;
+            }
+        }
+        else
+        {
+            sFactorySelectScreen->cursorAnimX = INVALID_COMFY_ANIM;
+        }
+    }
+
+    if (sFactorySelectScreen->menuCursorAnimY != INVALID_COMFY_ANIM)
+    {
+        struct ComfyAnim *anim = &gComfyAnims[sFactorySelectScreen->menuCursorAnimY];
+        s16 y;
+
+        if (anim->inUse)
+        {
+            y = ReadComfyAnimValueSmooth(anim);
+            gSprites[sFactorySelectScreen->menuCursor1SpriteId].y = y;
+            gSprites[sFactorySelectScreen->menuCursor2SpriteId].y = y;
+            if (anim->completed)
+            {
+                ReleaseComfyAnim(sFactorySelectScreen->menuCursorAnimY);
+                sFactorySelectScreen->menuCursorAnimY = INVALID_COMFY_ANIM;
+            }
+        }
+        else
+        {
+            sFactorySelectScreen->menuCursorAnimY = INVALID_COMFY_ANIM;
+        }
+    }
+}
+
+static void Select_ReleaseComfyCursorAnims(void)
+{
+    if (sFactorySelectScreen->cursorAnimX != INVALID_COMFY_ANIM)
+    {
+        ReleaseComfyAnim(sFactorySelectScreen->cursorAnimX);
+        sFactorySelectScreen->cursorAnimX = INVALID_COMFY_ANIM;
+    }
+
+    if (sFactorySelectScreen->menuCursorAnimY != INVALID_COMFY_ANIM)
+    {
+        ReleaseComfyAnim(sFactorySelectScreen->menuCursorAnimY);
+        sFactorySelectScreen->menuCursorAnimY = INVALID_COMFY_ANIM;
+    }
 }
 
 void DoEmeraldTowerRecruitSelectScreen(void)
@@ -1274,6 +1373,8 @@ static void Select_InitMonsData(void)
     sFactorySelectScreen->cursorPos = 0;
     sFactorySelectScreen->selectingMonsState = 1;
     sFactorySelectScreen->fromSummaryScreen = FALSE;
+    sFactorySelectScreen->cursorAnimX = INVALID_COMFY_ANIM;
+    sFactorySelectScreen->menuCursorAnimY = INVALID_COMFY_ANIM;
     for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
         sFactorySelectScreen->mons[i].selectedId = 0;
 
@@ -1284,6 +1385,9 @@ static void Select_InitAllSprites(void)
 {
     u8 i, cursorPos;
     s16 x;
+
+    sFactorySelectScreen->cursorAnimX = INVALID_COMFY_ANIM;
+    sFactorySelectScreen->menuCursorAnimY = INVALID_COMFY_ANIM;
 
     for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
     {
@@ -1309,6 +1413,8 @@ static void Select_InitAllSprites(void)
 static void Select_DestroyAllSprites(void)
 {
     u8 i;
+
+    Select_ReleaseComfyCursorAnims();
 
     for (i = 0; i < SELECTABLE_MONS_COUNT; i++)
         DestroySprite(&gSprites[sFactorySelectScreen->mons[i].ballSpriteId]);
@@ -1337,7 +1443,7 @@ static void Select_UpdateBallCursorPosition(s8 direction)
     }
 
     cursorPos = sFactorySelectScreen->cursorPos;
-    gSprites[sFactorySelectScreen->cursorSpriteId].x = gSprites[sFactorySelectScreen->mons[cursorPos].ballSpriteId].x;
+    Select_StartCursorAnimX(gSprites[sFactorySelectScreen->mons[cursorPos].ballSpriteId].x);
 }
 
 static void Select_UpdateMenuCursorPosition(s8 direction)
@@ -1357,8 +1463,7 @@ static void Select_UpdateMenuCursorPosition(s8 direction)
             sFactorySelectScreen->menuCursorPos = ARRAY_COUNT(sSelect_MenuOptionFuncs) - 1;
     }
 
-    gSprites[sFactorySelectScreen->menuCursor1SpriteId].y = (sFactorySelectScreen->menuCursorPos * 16) + 112;
-    gSprites[sFactorySelectScreen->menuCursor2SpriteId].y = (sFactorySelectScreen->menuCursorPos * 16) + 112;
+    Select_StartMenuCursorAnimY((sFactorySelectScreen->menuCursorPos * 16) + 112);
 }
 
 static void Select_UpdateYesNoCursorPosition(s8 direction)
@@ -1378,8 +1483,7 @@ static void Select_UpdateYesNoCursorPosition(s8 direction)
             sFactorySelectScreen->yesNoCursorPos = 1;
     }
 
-    gSprites[sFactorySelectScreen->menuCursor1SpriteId].y = (sFactorySelectScreen->yesNoCursorPos * 16) + 112;
-    gSprites[sFactorySelectScreen->menuCursor2SpriteId].y = (sFactorySelectScreen->yesNoCursorPos * 16) + 112;
+    Select_StartMenuCursorAnimY((sFactorySelectScreen->yesNoCursorPos * 16) + 112);
 }
 
 static void Select_HandleMonSelectionChange(void)
@@ -1722,6 +1826,7 @@ static void CreateFrontierFactorySelectableMons(u8 firstMonId)
         enum Species baseSpecies = (Random() % (NUM_SPECIES - 1)) + 1;
         enum Species species;
         struct Pokemon *mon = &sFactorySelectScreen->mons[i + firstMonId].monData;
+        u32 perfectIvs = MAX_PER_STAT_IVS | (MAX_PER_STAT_IVS << 5) | (MAX_PER_STAT_IVS << 10) | (MAX_PER_STAT_IVS << 15) | (MAX_PER_STAT_IVS << 20) | (MAX_PER_STAT_IVS << 25);
         u32 maxHp;
 
         if (GET_BASE_SPECIES_ID(baseSpecies) != baseSpecies)
@@ -1741,6 +1846,7 @@ static void CreateFrontierFactorySelectableMons(u8 firstMonId)
 
         sFactorySelectScreen->mons[i + firstMonId].monId = species;
         CreateMon(mon, species, 100, 0, OTID_STRUCT_PLAYER_ID);
+        SetMonData(mon, MON_DATA_IVS, &perfectIvs);
         GiveMonInitialMoveset(mon);
         CalculateMonStats(mon);
         maxHp = GetMonData(mon, MON_DATA_MAX_HP);

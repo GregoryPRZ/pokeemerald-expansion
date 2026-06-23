@@ -1098,7 +1098,12 @@ static void CreateMainMenu(u8 whichMenu, s16 *windowIdPtr)
 static void CB2_ExitPokeStorage(void)
 {
     sPreviousBoxOption = GetCurrentBoxOption();
-    gFieldCallback = FieldTask_ReturnToPcMenu;
+#if SWSH_PARTY_MENU_PC_ACCESS
+    if (PokemonPC_HasReturnToPartyCallback())
+        gFieldCallback = CB2_ReopenPartyMenuFromPC;
+    else
+#endif
+        gFieldCallback = FieldTask_ReturnToPcMenu;
     SetMainCallback2(CB2_ReturnToField);
 }
 
@@ -4336,10 +4341,12 @@ static bool8 PrintDisplayMonInfo(void)
         switch (sStorage->displayMonInfoLoadState)
         {
         case 0:
+        {
             u8 fontId = GetFontIdToFit(sStorage->displayMon.nickname, font, 0, 56);
             UpdateGenderIconSprite(fontId);
             sStorage->displayMonInfoLoadState++;
             break;
+        }
         case 1:
             UpdateTypeIconsSprite();
             UpdateStatLabelsSprites();
