@@ -65,6 +65,8 @@ struct StatEditorResources
     u16 unspentEVs;
     u16 spentThisSession;
     u16 existingEVs[6];
+    u16 existingNature;
+    u16 existingAbilityNum;
     u8 currentStat;
 };
 
@@ -100,6 +102,8 @@ static u16 GetNumUnspentEVs(void);
 static void SetExistingEVs(void);
 static void ResetEVsToStartValues(void);
 static void HandleEditingStatInput(u32 input);
+static void HandleEditingNatureOrAbilityInput(u32 input);
+static void BlitSwshButtonToWindow(u32 windowId, const u8 *pixels, u16 x, u16 y, u16 width, u16 height);
 
 //==========CONST=DATA==========//
 static const struct BgTemplate sStatEditorBgTemplates[] =
@@ -205,10 +209,11 @@ static const u8 sMenuWindowFontColors[][3] =
 
 static const u16 sSelector_Pal[] = INCBIN_U16("graphics/ui_menu/selector.gbapal");
 static const u32 sSelector_Gfx[] = INCBIN_U32("graphics/ui_menu/selector.4bpp.lz");
-static const u8 sA_ButtonGfx[]         = INCBIN_U8("graphics/ui_menu/a_button.4bpp");
+static const u8 sA_ButtonGfx[]         = INCBIN_U8("graphics/summary_screen/swsh/button_a.4bpp");
 static const u8 sB_ButtonGfx[]         = INCBIN_U8("graphics/ui_menu/b_button.4bpp");
 static const u8 sR_ButtonGfx[]         = INCBIN_U8("graphics/ui_menu/r_button.4bpp");
 static const u8 sDPad_ButtonGfx[]         = INCBIN_U8("graphics/ui_menu/dpad_button.4bpp");
+static const u8 sStart_ButtonGfx[]     = INCBIN_U8("graphics/summary_screen/swsh/button_start.4bpp");
 
 static const struct OamData sOamData_Selector =
 {
@@ -586,6 +591,37 @@ static u8 CreateSelector()
     return sStatEditorDataPtr->selectorSpriteId;
 }
 
+static u8 RemapSwshButtonColor(u8 color)
+{
+    switch (color)
+    {
+    case 1:
+        return TEXT_COLOR_DARK_GRAY;
+    case 3:
+        return TEXT_COLOR_WHITE;
+    case 4:
+        return TEXT_COLOR_LIGHT_GRAY;
+    default:
+        return TEXT_COLOR_TRANSPARENT;
+    }
+}
+
+static void BlitSwshButtonToWindow(u32 windowId, const u8 *pixels, u16 x, u16 y, u16 width, u16 height)
+{
+    u32 i;
+    u32 size = (width * height) / 2;
+    u8 remapped[128];
+
+    for (i = 0; i < size; i++)
+    {
+        u8 left = RemapSwshButtonColor(pixels[i] & 0xF);
+        u8 right = RemapSwshButtonColor(pixels[i] >> 4);
+        remapped[i] = left | (right << 4);
+    }
+
+    BlitBitmapToWindow(windowId, remapped, x, y, width, height);
+}
+
 static void DestroySelector()
 {
     if (sStatEditorDataPtr->selectorSpriteId != 0xFF)
@@ -699,6 +735,9 @@ static void SetExistingEVs(void)
     {
         sStatEditorDataPtr->existingEVs[i] = GetMonData(ReturnPartyMon(), statsToPrintEVs[i]);
     }
+
+    sStatEditorDataPtr->existingNature = GetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE);
+    sStatEditorDataPtr->existingAbilityNum = GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM);
 }
 
 static void ResetEVsToStartValues(void)
@@ -709,6 +748,10 @@ static void ResetEVsToStartValues(void)
     {
         SetMonData(ReturnPartyMon(), statsToPrintEVs[i], &sStatEditorDataPtr->existingEVs[i]);
     }
+
+    SetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE, &sStatEditorDataPtr->existingNature);
+    SetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM, &sStatEditorDataPtr->existingAbilityNum);
+    CalculateMonStats(ReturnPartyMon());
 }
 
 static bool32 AreStatsUnchanged(void)
@@ -720,6 +763,12 @@ static bool32 AreStatsUnchanged(void)
         if (sStatEditorDataPtr->existingEVs[i] != GetMonData(ReturnPartyMon(), statsToPrintEVs[i]))
             return FALSE;
     }
+
+    if (sStatEditorDataPtr->existingNature != GetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE))
+        return FALSE;
+
+    if (sStatEditorDataPtr->existingAbilityNum != GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM))
+        return FALSE;
 
     return TRUE;
 }
@@ -751,6 +800,7 @@ static void PrintMonStats()
     u16 personality = GetMonData(ReturnPartyMon(), MON_DATA_PERSONALITY);
     u16 gender = GetGenderFromSpeciesAndPersonality(sStatEditorDataPtr->speciesID, personality);
     u8 color;
+    u8 abilityFontId;
 
     FillWindowPixelBuffer(WINDOW_2, PIXEL_FILL(TEXT_COLOR_TRANSPARENT));
     FillWindowPixelBuffer(WINDOW_3, PIXEL_FILL(TEXT_COLOR_TRANSPARENT));
@@ -831,12 +881,15 @@ static void PrintMonStats()
         AddTextPrinterParameterized4(WINDOW_3, FONT_NORMAL, 41 + 8, 19, 0, 0, sGenderColors[(gender == MON_FEMALE)], TEXT_SKIP_DRAW, text);
     }
 
-    nature = GetNature(ReturnPartyMon());
+    nature = GetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE);
     StringCopy(gStringVar2, gNaturesInfo[nature].name);
     AddTextPrinterParameterized4(WINDOW_3, FONT_SMALL_NARROW, 4, 50, 0, 0, sMenuWindowFontColors[FONT_WHITE], 0xFF, gStringVar2);
+    BlitSwshButtonToWindow(WINDOW_3, sStart_ButtonGfx, 40, 54, 32, 8);
 
     StringCopy(gStringVar2, gAbilitiesInfo[gSpeciesInfo[sStatEditorDataPtr->speciesID].abilities[GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM)]].name);
-    AddTextPrinterParameterized4(WINDOW_3, FONT_SMALL_NARROW, 4, 34, 0, 0, sMenuWindowFontColors[FONT_WHITE], 0xFF, gStringVar2);
+    abilityFontId = (StringLength(gStringVar2) > 10) ? FONT_SMALL_NARROWER : FONT_SMALL_NARROW;
+    AddTextPrinterParameterized4(WINDOW_3, abilityFontId, 4, 34, 0, 0, sMenuWindowFontColors[FONT_WHITE], 0xFF, gStringVar2);
+    BlitSwshButtonToWindow(WINDOW_3, sA_ButtonGfx, 54, 38, 8, 8);
 
     PutWindowTilemap(WINDOW_3);
     CopyWindowToVram(WINDOW_3, 3);
@@ -908,6 +961,16 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
         HandleEditingStatInput(EDIT_INPUT_BIG_INCREASE_STATE);
         return;
     }
+    if (JOY_NEW(A_BUTTON))
+    {
+        HandleEditingNatureOrAbilityInput(EDIT_INPUT_INCREASE_STATE);
+        return;
+    }
+    if (JOY_NEW(START_BUTTON))
+    {
+        HandleEditingNatureOrAbilityInput(EDIT_INPUT_BIG_INCREASE_STATE);
+        return;
+    }
     if (JOY_NEW(B_BUTTON))
     {
         gSprites[sStatEditorDataPtr->selectorSpriteId].invisible = TRUE;
@@ -936,6 +999,41 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
         return;
     }
 
+}
+
+static u8 GetNextValidAbilityNum(u8 abilityNum, s8 direction)
+{
+    u8 i;
+    u8 nextAbilityNum = abilityNum;
+
+    for (i = 0; i < NUM_ABILITY_SLOTS; i++)
+    {
+        nextAbilityNum = (nextAbilityNum + NUM_ABILITY_SLOTS + direction) % NUM_ABILITY_SLOTS;
+        if (GetSpeciesAbility(sStatEditorDataPtr->speciesID, nextAbilityNum) != ABILITY_NONE)
+            return nextAbilityNum;
+    }
+
+    return abilityNum;
+}
+
+static void HandleEditingNatureOrAbilityInput(u32 input)
+{
+    if (input == EDIT_INPUT_INCREASE_STATE)
+    {
+        u32 abilityNum = GetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM);
+        abilityNum = GetNextValidAbilityNum(abilityNum, 1);
+        SetMonData(ReturnPartyMon(), MON_DATA_ABILITY_NUM, &abilityNum);
+    }
+    else
+    {
+        u32 nature = GetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE);
+        nature = (nature + 1) % NUM_NATURES;
+        SetMonData(ReturnPartyMon(), MON_DATA_HIDDEN_NATURE, &nature);
+        CalculateMonStats(ReturnPartyMon());
+    }
+
+    PrintMonStats();
+    StartSpriteAnim(&gSprites[sStatEditorDataPtr->selectorSpriteId], 3);
 }
 
 static void ChangeAndUpdateStat()
