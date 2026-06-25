@@ -73,6 +73,7 @@ enum {
     GFXTAG_ACTION_HIGHLIGHT_MIDDLE,
     GFXTAG_ACTION_HIGHLIGHT_RIGHT,
     GFXTAG_MON_PIC_BG_ANIM,
+    PALTAG_RECRUIT_PREVIEW_MON,
     PALTAG_RECRUIT_MON_SHADOW,
 };
 
@@ -185,7 +186,6 @@ static void CB2_InitSelectScreen(void);
 static void Select_SetWinRegs(s16, s16, s16, s16);
 static void Select_InitMonsData(void);
 static void Select_InitAllSprites(void);
-static void Select_ReshowMonSprite(void);
 static void Select_PrintSelectMonString(void);
 static void Select_PrintMonSpecies(void);
 static void Select_PrintMonCategory(void);
@@ -210,6 +210,8 @@ static void Select_Task_HandleChooseMons(u8);
 static void Select_Task_HandleMenu(u8);
 static void CreateFrontierFactorySelectableMons(u8);
 static bool32 IsEmeraldTowerRecruitSpeciesValid(enum Species species);
+static bool32 IsEmeraldTowerRecruitBaseOrRegionalForm(enum Species species);
+static bool32 IsEmeraldTowerRecruitRegionalForm(enum Species species);
 static enum Species ChooseRandomValidEmeraldTowerRecruitForm(enum Species baseSpecies);
 static void Select_SetBallSpritePaletteNum(u8);
 static void Select_ErasePopupMenu(u8);
@@ -1320,21 +1322,7 @@ static void CB2_InitSelectScreen(void)
         SetVBlankCallback(VBlankCB_SelectScreen);
         BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
         SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_BG0_ON | DISPCNT_BG1_ON | DISPCNT_OBJ_1D_MAP);
-#ifdef UBFIX
-        if (sFactorySelectScreen && sFactorySelectScreen->fromSummaryScreen)
-#else
-        if (sFactorySelectScreen->fromSummaryScreen == TRUE)
-#endif
-        {
-            Select_SetWinRegs(88, 152, 32, 96);
-            ShowBg(3);
-            SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG3 | BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_BG1 | BLDCNT_TGT2_OBJ);
-            SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(11, 4));
-        }
-        else
-        {
-            HideBg(3);
-        }
+        HideBg(3);
         gMain.state++;
         break;
     case 6:
@@ -1346,8 +1334,6 @@ static void CB2_InitSelectScreen(void)
             sFactorySelectScreen->cursorPos = gLastViewedMonIndex;
         Select_InitMonsData();
         Select_InitAllSprites();
-        if (sFactorySelectScreen->fromSummaryScreen == TRUE)
-            Select_ReshowMonSprite();
         gMain.state++;
         break;
     case 7:
@@ -1899,8 +1885,14 @@ static bool32 IsEmeraldTowerRecruitSpeciesValid(enum Species species)
     if (species == SPECIES_NONE || species >= NUM_SPECIES)
         return FALSE;
 
+    if (!IsSpeciesEnabled(species))
+        return FALSE;
+
     speciesInfo = &gSpeciesInfo[species];
     if (speciesInfo->baseHP == 0)
+        return FALSE;
+
+    if (!IsEmeraldTowerRecruitBaseOrRegionalForm(species))
         return FALSE;
 
     if (speciesInfo->isMegaEvolution
@@ -1919,6 +1911,92 @@ static bool32 IsEmeraldTowerRecruitSpeciesValid(enum Species species)
         return TRUE;
 
     return evolutions[0].method == EVOLUTIONS_END;
+}
+
+static bool32 IsEmeraldTowerRecruitBaseOrRegionalForm(enum Species species)
+{
+    if (GET_BASE_SPECIES_ID(species) == species)
+        return TRUE;
+
+    return IsEmeraldTowerRecruitRegionalForm(species);
+}
+
+static bool32 IsEmeraldTowerRecruitRegionalForm(enum Species species)
+{
+    switch (species)
+    {
+#if P_ALOLAN_FORMS
+    case SPECIES_RATTATA_ALOLA:
+    case SPECIES_RATICATE_ALOLA:
+    case SPECIES_RAICHU_ALOLA:
+    case SPECIES_SANDSHREW_ALOLA:
+    case SPECIES_SANDSLASH_ALOLA:
+    case SPECIES_VULPIX_ALOLA:
+    case SPECIES_NINETALES_ALOLA:
+    case SPECIES_DIGLETT_ALOLA:
+    case SPECIES_DUGTRIO_ALOLA:
+    case SPECIES_MEOWTH_ALOLA:
+    case SPECIES_PERSIAN_ALOLA:
+    case SPECIES_GEODUDE_ALOLA:
+    case SPECIES_GRAVELER_ALOLA:
+    case SPECIES_GOLEM_ALOLA:
+    case SPECIES_GRIMER_ALOLA:
+    case SPECIES_MUK_ALOLA:
+    case SPECIES_EXEGGUTOR_ALOLA:
+    case SPECIES_MAROWAK_ALOLA:
+        return TRUE;
+#endif
+#if P_GALARIAN_FORMS
+    case SPECIES_MEOWTH_GALAR:
+    case SPECIES_PONYTA_GALAR:
+    case SPECIES_RAPIDASH_GALAR:
+    case SPECIES_SLOWPOKE_GALAR:
+    case SPECIES_SLOWBRO_GALAR:
+    case SPECIES_FARFETCHD_GALAR:
+    case SPECIES_WEEZING_GALAR:
+    case SPECIES_MR_MIME_GALAR:
+    case SPECIES_ARTICUNO_GALAR:
+    case SPECIES_ZAPDOS_GALAR:
+    case SPECIES_MOLTRES_GALAR:
+    case SPECIES_SLOWKING_GALAR:
+    case SPECIES_CORSOLA_GALAR:
+    case SPECIES_ZIGZAGOON_GALAR:
+    case SPECIES_LINOONE_GALAR:
+    case SPECIES_DARUMAKA_GALAR:
+    case SPECIES_DARMANITAN_GALAR_STANDARD:
+    case SPECIES_YAMASK_GALAR:
+    case SPECIES_STUNFISK_GALAR:
+        return TRUE;
+#endif
+#if P_HISUIAN_FORMS
+    case SPECIES_GROWLITHE_HISUI:
+    case SPECIES_ARCANINE_HISUI:
+    case SPECIES_VOLTORB_HISUI:
+    case SPECIES_ELECTRODE_HISUI:
+    case SPECIES_TYPHLOSION_HISUI:
+    case SPECIES_QWILFISH_HISUI:
+    case SPECIES_SNEASEL_HISUI:
+    case SPECIES_SAMUROTT_HISUI:
+    case SPECIES_LILLIGANT_HISUI:
+    case SPECIES_ZORUA_HISUI:
+    case SPECIES_ZOROARK_HISUI:
+    case SPECIES_BRAVIARY_HISUI:
+    case SPECIES_SLIGGOO_HISUI:
+    case SPECIES_GOODRA_HISUI:
+    case SPECIES_AVALUGG_HISUI:
+    case SPECIES_DECIDUEYE_HISUI:
+        return TRUE;
+#endif
+#if P_PALDEAN_FORMS
+    case SPECIES_TAUROS_PALDEA_COMBAT:
+    case SPECIES_TAUROS_PALDEA_BLAZE:
+    case SPECIES_TAUROS_PALDEA_AQUA:
+    case SPECIES_WOOPER_PALDEA:
+        return TRUE;
+#endif
+    default:
+        return FALSE;
+    }
 }
 
 static enum Species ChooseRandomValidEmeraldTowerRecruitForm(enum Species baseSpecies)
@@ -2172,8 +2250,10 @@ static void Select_RefreshPreviewMonSprite(void)
                                   species,
                                   personality,
                                   isEgg);
-    LoadSpritePaletteWithTag(GetMonSpritePalFromSpeciesAndPersonalityIsEgg(species, isShiny, personality, isEgg), species);
     SetMultiuseSpriteTemplateToPokemon(species, B_POSITION_OPPONENT_LEFT);
+    FreeSpritePaletteByTag(PALTAG_RECRUIT_PREVIEW_MON);
+    LoadSpritePaletteWithTag(GetMonSpritePalFromSpeciesAndPersonalityIsEgg(species, isShiny, personality, isEgg), PALTAG_RECRUIT_PREVIEW_MON);
+    gMultiuseSpriteTemplate.paletteTag = PALTAG_RECRUIT_PREVIEW_MON;
 
     sFactorySelectScreen->previewShadowSpriteId = CreateSprite(&gMultiuseSpriteTemplate, SELECT_PREVIEW_SHADOW_X, SELECT_PREVIEW_SHADOW_Y, 5);
     if (sFactorySelectScreen->previewShadowSpriteId != MAX_SPRITES)
@@ -2225,7 +2305,7 @@ static void Select_DestroyPreviewMonSprite(void)
 {
     if (sFactorySelectScreen->previewShadowSpriteId != MAX_SPRITES)
     {
-        DestroySpriteAndFreeResources(&gSprites[sFactorySelectScreen->previewShadowSpriteId]);
+        DestroySprite(&gSprites[sFactorySelectScreen->previewShadowSpriteId]);
         sFactorySelectScreen->previewShadowSpriteId = MAX_SPRITES;
     }
 
@@ -2234,6 +2314,9 @@ static void Select_DestroyPreviewMonSprite(void)
         DestroySpriteAndFreeResources(&gSprites[sFactorySelectScreen->previewMonSpriteId]);
         sFactorySelectScreen->previewMonSpriteId = MAX_SPRITES;
     }
+
+    FreeSpritePaletteByTag(PALTAG_RECRUIT_PREVIEW_MON);
+    FreeSpritePaletteByTag(PALTAG_RECRUIT_MON_SHADOW);
 }
 
 static void Select_UpdatePreviewMonSprite(void)
@@ -2274,28 +2357,6 @@ static void Select_UpdatePreviewMonSprite(void)
 #undef sIsEgg
 #undef sDontFlip
 #undef sIsShadow
-
-static void Select_ReshowMonSprite(void)
-{
-    struct Pokemon *mon;
-    enum Species species;
-    u32 personality;
-    bool8 isShiny;
-
-    sFactorySelectScreen->monPics[1].bgSpriteId = CreateSprite(&sSpriteTemplate_Select_MonPicBgAnim, 120, 64, 1);
-    StartSpriteAffineAnim(&gSprites[sFactorySelectScreen->monPics[1].bgSpriteId], 2);
-
-    mon = &sFactorySelectScreen->mons[sFactorySelectScreen->cursorPos].monData;
-    species = GetMonData(mon, MON_DATA_SPECIES);
-    personality = GetMonData(mon, MON_DATA_PERSONALITY);
-    isShiny = GetMonData(mon, MON_DATA_IS_SHINY);
-
-    sFactorySelectScreen->monPics[1].monSpriteId = CreateMonPicSprite(species, isShiny, personality, TRUE, 88, 32, 15, TAG_NONE);
-    gSprites[sFactorySelectScreen->monPics[1].monSpriteId].centerToCornerVecX = 0;
-    gSprites[sFactorySelectScreen->monPics[1].monSpriteId].centerToCornerVecY = 0;
-
-    gSprites[sFactorySelectScreen->monPics[1].bgSpriteId].invisible = TRUE;
-}
 
 static void Select_CreateChosenMonsSprites(void)
 {
