@@ -1040,8 +1040,6 @@ static void Task_UsmHandleMainInput(u8 taskId)
             gTasks[taskId].data[0] = 0;
             gTasks[taskId].func = Task_UsmHandleMoveItems;
             break;
-        case DPAD_UP:
-        case DPAD_DOWN:
         case DPAD_RIGHT:
         case DPAD_LEFT:
             Usm_HandleDPadInput(input);
@@ -1056,7 +1054,7 @@ static void Usm_HandleDPadInput(u8 input)
     u8 page = sUsmState->page;
     u8 lastPage = sUsmState->pageCount - 1;
 
-    PlaySE(SE_SELECT);
+    PlaySE(SE_DP_MENU_SELECT);
 
     if (input == DPAD_RIGHT)
     {
