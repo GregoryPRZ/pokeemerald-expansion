@@ -3,6 +3,7 @@
 #include "battle_pyramid.h"
 #include "battle_pyramid_bag.h"
 #include "bg.h"
+#include "comfy_anim.h"
 #include "config/debug.h"
 #include "constants/battle_pyramid.h"
 #include "constants/characters.h"
@@ -60,6 +61,8 @@ typedef bool8 (*Usm_MenuCB)(void) ;
 #define USM_ICON_WIDTH 32
 #define USM_BANNER_WIDTH 224
 #define USM_ICON_YPOS 128
+#define USM_SLIDE_OFFSET 72
+#define USM_SLIDE_DURATION 12
 
 enum Usm_IconTiletags {
     USM_TILETAG_POKEDEX = 0x1000,
@@ -111,6 +114,7 @@ struct Usm_Memory {
     struct Usm_State state;
     u8 spriteIds[USM_MAX_ICON_COUNT];
     u8 windowIds[USM_WIN_COUNT];
+    u8 slideAnimId;
 };
 
 struct Usm_MenuItem {
@@ -245,9 +249,17 @@ static void Task_UsmHandleMainInput(u8 taskId);
 static void Task_UsmHandleMoveItems(u8 taskId);
 static void Task_UsmFadeAndRunCallback(u8 taskId);
 static void Task_UsmRunCallbackNoFade(u8 taskId);
+static void Task_UsmOpenSlideIn(u8 taskId);
+static void Task_UsmCloseSlideThenExit(u8 taskId);
+static void Task_UsmCloseSlideThenFadeAndRunCallback(u8 taskId);
+static void Task_UsmCloseSlideThenRunCallbackNoFade(u8 taskId);
 
 // Static Functions
 static void Usm_LoadBgGfx(void);
+static void Usm_StartSlideAnim(s16 from, s16 to);
+static bool8 Usm_UpdateSlideAnim(void);
+static void Usm_ApplySlideOffset(s16 offset);
+static void Usm_ReleaseSlideAnim(void);
 static void Usm_CreateIcons(s16 x, s16 y);
 static void Usm_LoadIconGfx(void);
 static struct Sprite* Usm_GetSelectedSprite(void);
@@ -262,6 +274,7 @@ static void Usm_AnimateSelectedIcon(void);
 static struct Sprite* Usm_GetIconSprite(u8 iconId);
 static void Usm_SwitchPage(s8 pageNum);
 static void Usm_ExitStartMenu(void);
+static void Usm_StartCloseSlide(u8 taskId, TaskFunc nextFunc);
 static u32 Usm_ReadKeys(void);
 static void Usm_SwitchSelectedIcon(enum Usm_Icons iconId);
 static void Usm_HandleDPadInput(u8 input);
@@ -577,6 +590,7 @@ void Usm_InitStartMenu(void)
         SetGpuRegBits(REG_OFFSET_WINOUT, WINOUT_WINOBJ_OBJ | WINOUT_WINOBJ_BG0);
     }
 
+    sUsmMemory->slideAnimId = INVALID_COMFY_ANIM;
     sUsmState = &sUsmMemory->state;
 
     sUsmState->page = sUsmSavedPage;
@@ -598,7 +612,8 @@ void Usm_InitStartMenu(void)
     Usm_LoadIconPalette();
     Usm_CreateIcons(0, USM_ICON_YPOS);
     Usm_StartIconAnim(sUsmState->selectedIcon);
-    CreateTask(Task_UsmHandleMainInput, 0);
+    Usm_StartSlideAnim(USM_SLIDE_OFFSET, 0);
+    CreateTask(Task_UsmOpenSlideIn, 0);
 }
 
 static void Usm_PrintText(u8 winId, u8 fontId, s16 x, s16 y, const u8* color, const u8* str)
@@ -675,6 +690,64 @@ static void Usm_LoadBgGfx(void)
     LoadPalette(sUsmBgPalette, BG_PLTT_ID(14), PLTT_SIZE_4BPP);
     SetBgTilemapBuffer(0, buffer);
     ScheduleBgCopyTilemapToVram(0);
+}
+
+static void Usm_StartSlideAnim(s16 from, s16 to)
+{
+    struct ComfyAnimEasingConfig config;
+
+    Usm_ReleaseSlideAnim();
+    InitComfyAnimConfig_Easing(&config);
+    config.from = Q_24_8(from);
+    config.to = Q_24_8(to);
+    config.durationFrames = USM_SLIDE_DURATION;
+    config.easingFunc = ComfyAnimEasing_EaseOutCubic;
+    sUsmMemory->slideAnimId = CreateComfyAnim_Easing(&config);
+    Usm_ApplySlideOffset(from);
+}
+
+static bool8 Usm_UpdateSlideAnim(void)
+{
+    struct ComfyAnim *anim;
+
+    if (sUsmMemory->slideAnimId == INVALID_COMFY_ANIM)
+        return TRUE;
+
+    AdvanceComfyAnimations();
+    anim = &gComfyAnims[sUsmMemory->slideAnimId];
+    Usm_ApplySlideOffset(ReadComfyAnimValueSmooth(anim));
+    if (anim->completed)
+    {
+        Usm_ApplySlideOffset(anim->config.data.easing.to >> 8);
+        Usm_ReleaseSlideAnim();
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+static void Usm_ApplySlideOffset(s16 offset)
+{
+    u32 i;
+
+    SetGpuReg(REG_OFFSET_BG0VOFS, (-offset) & 0x1FF);
+
+    for (i = 0; i < sUsmState->visible.count; i++)
+    {
+        u8 spriteId = sUsmMemory->spriteIds[i];
+
+        if (spriteId != MAX_SPRITES)
+            gSprites[spriteId].y2 = offset;
+    }
+}
+
+static void Usm_ReleaseSlideAnim(void)
+{
+    if (sUsmMemory != NULL && sUsmMemory->slideAnimId != INVALID_COMFY_ANIM)
+    {
+        ReleaseComfyAnim(sUsmMemory->slideAnimId);
+        sUsmMemory->slideAnimId = INVALID_COMFY_ANIM;
+    }
 }
 
 static void GetCurrentDateTime(struct DateTime* dateTime)
@@ -938,6 +1011,8 @@ static void Usm_ExitStartMenu(void)
     Usm_SaveItems();
     u8* buf = GetBgTilemapBuffer(0);
 
+    Usm_ReleaseSlideAnim();
+    Usm_ApplySlideOffset(0);
     Usm_DestroyVisibleIcons();
 
     for (u32 i = 0; i < USM_ICO_COUNT; i++) {
@@ -959,6 +1034,13 @@ static void Usm_ExitStartMenu(void)
     ScheduleBgCopyTilemapToVram(0);
 
     TRY_FREE_AND_SET_NULL(sUsmMemory);
+}
+
+static void Usm_StartCloseSlide(u8 taskId, TaskFunc nextFunc)
+{
+    Usm_StartSlideAnim(0, USM_SLIDE_OFFSET);
+    gTasks[taskId].data[0] = 0;
+    gTasks[taskId].func = nextFunc;
 }
 
 static void Usm_SaveItems(void)
@@ -1019,17 +1101,14 @@ static void Task_UsmHandleMainInput(u8 taskId)
             sUsmSavedIcon = sUsmState->selectedIcon;
             sUsmSavedPage = sUsmState->page;
             if (sUsmMenuItems[iconId].shouldFade)
-                func = Task_UsmFadeAndRunCallback;
+                func = Task_UsmCloseSlideThenFadeAndRunCallback;
             else
-                func = Task_UsmRunCallbackNoFade;
-            gTasks[taskId].func = func;
+                func = Task_UsmCloseSlideThenRunCallbackNoFade;
+            Usm_StartCloseSlide(taskId, func);
             break;
         case B_BUTTON:
             PlaySE(SE_PC_OFF);
-            Usm_ExitStartMenu();
-            UnfreezeObjectEvents();
-            UnlockPlayerFieldControls();
-            DestroyTask(taskId);
+            Usm_StartCloseSlide(taskId, Task_UsmCloseSlideThenExit);
             break;
         case L_BUTTON:
             PlaySE(SE_SELECT);
@@ -1045,6 +1124,12 @@ static void Task_UsmHandleMainInput(u8 taskId)
             Usm_HandleDPadInput(input);
             break;
     }
+}
+
+static void Task_UsmOpenSlideIn(u8 taskId)
+{
+    if (Usm_UpdateSlideAnim())
+        gTasks[taskId].func = Task_UsmHandleMainInput;
 }
 
 static void Usm_HandleDPadInput(u8 input)
@@ -1116,6 +1201,32 @@ static void Task_UsmRunCallbackNoFade(u8 taskId)
         gMenuCallback();
         DestroyTask(taskId);
     }
+}
+
+static void Task_UsmCloseSlideThenExit(u8 taskId)
+{
+    if (Usm_UpdateSlideAnim())
+    {
+        Usm_ExitStartMenu();
+        UnfreezeObjectEvents();
+        UnlockPlayerFieldControls();
+        DestroyTask(taskId);
+    }
+}
+
+static void Task_UsmCloseSlideThenFadeAndRunCallback(u8 taskId)
+{
+    if (Usm_UpdateSlideAnim())
+    {
+        gTasks[taskId].data[0] = 0;
+        gTasks[taskId].func = Task_UsmFadeAndRunCallback;
+    }
+}
+
+static void Task_UsmCloseSlideThenRunCallbackNoFade(u8 taskId)
+{
+    if (Usm_UpdateSlideAnim())
+        gTasks[taskId].func = Task_UsmRunCallbackNoFade;
 }
 
 static void Task_UsmHandleMoveItems(u8 taskId)
@@ -1313,4 +1424,3 @@ static bool32 IsPlayerInBattlePyramid(void)
 {
     return CurrentBattlePyramidLocation() != PYRAMID_LOCATION_NONE;
 }
-
