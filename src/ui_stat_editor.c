@@ -939,40 +939,47 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
 {
     if (JOY_NEW(DPAD_LEFT))
     {
+        PlaySE(SE_SELECT);
         sStatEditorDataPtr->editingStat = GetMonData(ReturnPartyMon(), selectedStatToStatEnum[sStatEditorDataPtr->selectedStat]);
         HandleEditingStatInput(EDIT_INPUT_DECREASE_STATE);
         return;
     }
     if (JOY_NEW(DPAD_RIGHT))
     {
+        PlaySE(SE_SELECT);
         sStatEditorDataPtr->editingStat = GetMonData(ReturnPartyMon(), selectedStatToStatEnum[sStatEditorDataPtr->selectedStat]);
         HandleEditingStatInput(EDIT_INPUT_INCREASE_STATE);
         return;
     }
     if (JOY_NEW(L_BUTTON))
     {
+        PlaySE(SE_SELECT);
         sStatEditorDataPtr->editingStat = GetMonData(ReturnPartyMon(), selectedStatToStatEnum[sStatEditorDataPtr->selectedStat]);
         HandleEditingStatInput(EDIT_INPUT_BIG_DECREASE_STATE);
         return;
     }
     if (JOY_NEW(R_BUTTON))
     {
+        PlaySE(SE_SELECT);
         sStatEditorDataPtr->editingStat = GetMonData(ReturnPartyMon(), selectedStatToStatEnum[sStatEditorDataPtr->selectedStat]);
         HandleEditingStatInput(EDIT_INPUT_BIG_INCREASE_STATE);
         return;
     }
     if (JOY_NEW(A_BUTTON))
     {
+        PlaySE(SE_PIN);
         HandleEditingNatureOrAbilityInput(EDIT_INPUT_INCREASE_STATE);
         return;
     }
     if (JOY_NEW(START_BUTTON))
     {
+        PlaySE(SE_PIN);
         HandleEditingNatureOrAbilityInput(EDIT_INPUT_BIG_INCREASE_STATE);
         return;
     }
     if (JOY_NEW(B_BUTTON))
     {
+        PlaySE(SE_SAVE);
         gSprites[sStatEditorDataPtr->selectorSpriteId].invisible = TRUE;
         gTasks[taskId].func = Task_StatEditorConfirmChanges;
         if (AreStatsUnchanged())
@@ -982,6 +989,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
     }
     if (JOY_NEW(DPAD_UP))
     {
+        PlaySE(SE_DP_MENU_SELECT);
         if (sStatEditorDataPtr->selector_y == 0)
             sStatEditorDataPtr->selector_y = 5;
         else
@@ -991,6 +999,7 @@ static void Task_StatEditorMain(u8 taskId) // input control when first loaded in
     }
     if (JOY_NEW(DPAD_DOWN))
     {
+        PlaySE(SE_DP_MENU_SELECT);
         if (sStatEditorDataPtr->selector_y == 5)
             sStatEditorDataPtr->selector_y = 0;
         else

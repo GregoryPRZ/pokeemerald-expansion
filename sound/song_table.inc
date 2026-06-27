@@ -983,6 +983,15 @@ gSongTable::
 	song mus_hg_obtain_castle_points, MUSIC_PLAYER_SE2, 2
 	song mus_hg_obtain_b_points, MUSIC_PLAYER_SE2, 2
 	song mus_hg_win_minigame, MUSIC_PLAYER_SE2, 2
+	song se_dp_select, MUSIC_PLAYER_SE2, 2
+	song se_dp_start, MUSIC_PLAYER_SE2, 2
+	song se_dp_save, MUSIC_PLAYER_SE1, 1
+	song se_dp_box_pick, MUSIC_PLAYER_SE2, 2
+	song se_dp_box_place, MUSIC_PLAYER_SE2, 2
+	song se_dp_page, MUSIC_PLAYER_SE2, 2
+	song se_dp_pin, MUSIC_PLAYER_SE2, 2
+	song se_dp_menu_select, MUSIC_PLAYER_SE2, 2
+	song se_dp_cancel, MUSIC_PLAYER_SE2, 2
 
 	.align 2
 dummy_song_header:

@@ -6,9 +6,9 @@
 #define MUS_DUMMY                   0 // MUS_DUMMY
 #define SE_USE_ITEM                 1 // SE_KAIFUKU
 #define SE_PC_LOGIN                 2 // SE_PC_LOGIN
-#define SE_PC_OFF                   3 // SE_PC_OFF
+#define SE_PC_OFF                   985 // SE_DP_CANCEL
 #define SE_PC_ON                    4 // SE_PC_ON
-#define SE_SELECT                   5 // SE_SELECT
+#define SE_SELECT                   977 // SE_DP_SELECT
 #define SE_WIN_OPEN                 6 // SE_WIN_OPEN
 #define SE_WALL_HIT                 7 // SE_WALL_HIT
 #define SE_DOOR                     8 // SE_DOOR
@@ -24,7 +24,7 @@
 #define SE_SLIDING_DOOR             18 // SE_JIDO_DOA
 #define SE_SHIP                     19 // SE_NAMINORI
 #define SE_BANG                     20 // SE_BAN
-#define SE_PIN                      21 // SE_PIN (General "good", commonly for "!")
+#define SE_PIN                      983 // SE_DP_PIN
 #define SE_BOO                      22 // SE_BOO (General "bad")
 #define SE_BALL                     23 // SE_BOWA (Giving Poké Ball to nurse, Poké Ball shake, etc)
 #define SE_CONTEST_PLACE            24 // SE_JYUNI
@@ -58,7 +58,7 @@
 #define SE_TRUCK_DOOR               52 // SE_TRACK_DOOR
 #define SE_BERRY_BLENDER            53 // SE_MOTER
 #define SE_CARD                     54 // SE_CARD (Unused, different from the RS card SE)
-#define SE_SAVE                     55 // SE_SAVE
+#define SE_SAVE                     979 // SE_DP_SAVE
 #define SE_BALL_BOUNCE_1            56 // SE_KON
 #define SE_BALL_BOUNCE_2            57 // SE_KON2
 #define SE_BALL_BOUNCE_3            58 // SE_KON3
@@ -112,7 +112,7 @@
 #define SE_VEND                     106 // SE_JIHANKI
 #define SE_ORB                      107 // SE_TAMA
 #define SE_DEX_SCROLL               108 // SE_Z_SCROLL
-#define SE_DEX_PAGE                 109 // SE_Z_PAGE
+#define SE_DEX_PAGE                 982 // SE_DP_PAGE
 #define SE_POKENAV_ON               110 // SE_PN_ON
 #define SE_POKENAV_OFF              111 // SE_PN_OFF
 #define SE_DEX_SEARCH               112 // SE_Z_SEARCH
@@ -913,8 +913,17 @@
 #define MUS_HG_OBTAIN_CASTLE_POINTS 974
 #define MUS_HG_OBTAIN_B_POINTS 975
 #define MUS_HG_WIN_MINIGAME 976
+#define SE_DP_SELECT 977
+#define SE_DP_START 978
+#define SE_DP_SAVE 979
+#define SE_DP_BOX_PICK 980
+#define SE_DP_BOX_PLACE 981
+#define SE_DP_PAGE 982
+#define SE_DP_PIN 983
+#define SE_DP_MENU_SELECT 984
+#define SE_DP_CANCEL 985
 
-#define END_MUS                     MUS_HG_WIN_MINIGAME
+#define END_MUS                     SE_DP_CANCEL
 
 #define MUS_ROUTE118                0x7FFF  // Map is split into 2 music sections. controlled by GetCurrLocationDefaultMusic().
 

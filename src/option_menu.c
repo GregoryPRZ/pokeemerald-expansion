@@ -9,12 +9,14 @@
 #include "scanline_effect.h"
 #include "sprite.h"
 #include "strings.h"
+#include "sound.h"
 #include "task.h"
 #include "text.h"
 #include "text_window.h"
 #include "window.h"
 #include "gba/m4a_internal.h"
 #include "constants/rgb.h"
+#include "constants/songs.h"
 
 #define tMenuSelection data[0]
 #define tTextSpeed data[1]
@@ -282,16 +284,23 @@ static void Task_OptionMenuProcessInput(u8 taskId)
     if (JOY_NEW(A_BUTTON))
     {
         if (gTasks[taskId].tMenuSelection == MENUITEM_CANCEL)
+        {
+            PlaySE(SE_PIN);
             gTasks[taskId].func = Task_OptionMenuSave;
+        }
     }
     else if (JOY_NEW(B_BUTTON))
     {
+        PlaySE(SE_DP_CANCEL);
         gTasks[taskId].func = Task_OptionMenuSave;
     }
     else if (JOY_NEW(DPAD_UP))
     {
         if (gTasks[taskId].tMenuSelection > 0)
+        {
+            PlaySE(SE_DP_MENU_SELECT);
             gTasks[taskId].tMenuSelection--;
+        }
         else
             gTasks[taskId].tMenuSelection = MENUITEM_CANCEL;
         HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
@@ -299,7 +308,10 @@ static void Task_OptionMenuProcessInput(u8 taskId)
     else if (JOY_NEW(DPAD_DOWN))
     {
         if (gTasks[taskId].tMenuSelection < MENUITEM_CANCEL)
+        {
+            PlaySE(SE_DP_MENU_SELECT);
             gTasks[taskId].tMenuSelection++;
+        }
         else
             gTasks[taskId].tMenuSelection = 0;
         HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);

@@ -641,13 +641,13 @@ static bool8 HandleStartMenuInput(void)
 {
     if (JOY_NEW(DPAD_UP))
     {
-        PlaySE(SE_SELECT);
+        PlaySE(SE_DP_MENU_SELECT);
         sStartMenuCursorPos = Menu_MoveCursor(-1);
     }
 
     if (JOY_NEW(DPAD_DOWN))
     {
-        PlaySE(SE_SELECT);
+        PlaySE(SE_DP_MENU_SELECT);
         sStartMenuCursorPos = Menu_MoveCursor(1);
     }
 
@@ -1501,7 +1501,7 @@ static void HideStartMenuWindow(void)
 
 void HideStartMenu(void)
 {
-    PlaySE(SE_SELECT);
+    PlaySE(SE_DP_CANCEL);
     HideStartMenuWindow();
 }
 

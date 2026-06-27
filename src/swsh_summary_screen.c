@@ -3243,7 +3243,7 @@ static void ChangePage(u8 taskId, s8 delta)
     if (summary->isEgg)
         return;
 
-    PlaySE(SE_SELECT);
+    PlaySE(SE_DP_PAGE);
     ClearPageWindowTilemaps(sMonSummaryScreen->currPageIndex);
     if (sMonSummaryScreen->currPageIndex == PSS_PAGE_SKILLS)
     {

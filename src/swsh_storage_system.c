@@ -6458,6 +6458,7 @@ static void MoveMon(void)
         return;
     }
 
+    PlaySE(SE_DP_BOX_PICK);
     sIsMonBeingMoved = TRUE;
 }
 
@@ -6482,6 +6483,7 @@ static void PlaceMon(void)
         return;
     }
 
+    PlaySE(SE_DP_BOX_PLACE);
     sIsMonBeingMoved = FALSE;
 }
 

@@ -2225,21 +2225,21 @@ static void HandleChooseMonCancel(u8 taskId, s8 *slotPtr)
     case PARTY_ACTION_SOFTBOILED:
     case PARTY_ACTION_MOVE_ITEM:
     case PARTY_ACTION_FUSION:
-        PlaySE(SE_SELECT);
+        PlaySE(SE_DP_CANCEL);
         DestroySelectFrame();
         FinishTwoMonAction(taskId);
         break;
     case PARTY_ACTION_MINIGAME:
-        PlaySE(SE_SELECT);
+        PlaySE(SE_DP_CANCEL);
         CancelParticipationPrompt(taskId);
         break;
     case PARTY_ACTION_SEND_MON_TO_BOX:
-        PlaySE(SE_SELECT);
+        PlaySE(SE_DP_CANCEL);
         gSelectedMonPartyId = PARTY_SIZE + 1;
         Task_ClosePartyMenu(taskId);
         break;
     default:
-        PlaySE(SE_SELECT);
+        PlaySE(SE_DP_CANCEL);
         if (DisplayCancelChooseMonYesNo(taskId) != TRUE)
         {
             if (!MenuHelpers_IsLinkActive())
