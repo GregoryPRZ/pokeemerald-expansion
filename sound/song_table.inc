@@ -992,6 +992,7 @@ gSongTable::
 	song se_dp_pin, MUSIC_PLAYER_SE2, 2
 	song se_dp_menu_select, MUSIC_PLAYER_SE2, 2
 	song se_dp_cancel, MUSIC_PLAYER_SE2, 2
+	song mus_dp_lounge, MUSIC_PLAYER_BGM, 0
 
 	.align 2
 dummy_song_header:

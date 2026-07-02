@@ -922,10 +922,12 @@
 #define SE_DP_PIN 983
 #define SE_DP_MENU_SELECT 984
 #define SE_DP_CANCEL 985
+#define MUS_DP_LOUNGE 986
 
-#define END_MUS                     SE_DP_CANCEL
+#define END_MUS                     MUS_DP_LOUNGE
 
 #define MUS_ROUTE118                0x7FFF  // Map is split into 2 music sections. controlled by GetCurrLocationDefaultMusic().
+#define MUS_RANDOM                  0x7FFE  // Map music is chosen from the random map music pool.
 
 #define MUS_NONE                    0xFFFF
 

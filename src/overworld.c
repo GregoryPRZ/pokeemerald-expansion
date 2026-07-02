@@ -186,6 +186,7 @@ static void SetKeyInterceptCallback(u16 (*func)(u32));
 static void SetFieldVBlankCallback(void);
 static void FieldClearVBlankHBlankCallbacks(void);
 static void TransitionMapMusic(void);
+static u16 ResolveRandomMapMusic(struct WarpData *warp, u16 music);
 static u8 GetAdjustedInitialTransitionFlags(struct InitialPlayerAvatarState *playerStruct, u16 metatileBehavior, enum MapType mapType);
 static enum Direction GetAdjustedInitialDirection(struct InitialPlayerAvatarState *playerStruct, u8 transitionFlags, u16 metatileBehavior, enum MapType mapType);
 static u16 GetCenterScreenMetatileBehavior(void);
@@ -1218,6 +1219,52 @@ static bool16 IsInfiltratedSpaceCenter(struct WarpData *warp)
     return FALSE;
 }
 
+static const u16 sRandomMapMusicPool[] =
+{
+    MUS_B_FRONTIER,
+    MUS_B_TOWER,
+    MUS_B_DOME_LOBBY,
+    MUS_B_DOME,
+    MUS_B_ARENA,
+    MUS_B_FACTORY,
+    MUS_B_PIKE,
+    MUS_B_PALACE,
+    MUS_B_PYRAMID,
+    MUS_DP_LOUNGE,
+    MUS_DP_B_TOWER,
+    MUS_PL_FIGHT_AREA_DAY,
+    MUS_PL_B_ARCADE,
+    MUS_PL_B_HALL,
+    MUS_PL_B_CASTLE,
+    MUS_PL_B_FACTORY,
+};
+
+static bool8 sRandomMapMusicValid;
+static u8 sRandomMapMusicGroup;
+static u8 sRandomMapMusicNum;
+static u16 sRandomMapMusic;
+
+static u16 ResolveRandomMapMusic(struct WarpData *warp, u16 music)
+{
+    if (music != MUS_RANDOM)
+    {
+        sRandomMapMusicValid = FALSE;
+        return music;
+    }
+
+    if (sRandomMapMusicValid
+     && sRandomMapMusicGroup == warp->mapGroup
+     && sRandomMapMusicNum == warp->mapNum)
+        return sRandomMapMusic;
+
+    sRandomMapMusicValid = TRUE;
+    sRandomMapMusicGroup = warp->mapGroup;
+    sRandomMapMusicNum = warp->mapNum;
+    sRandomMapMusic = sRandomMapMusicPool[Random() % ARRAY_COUNT(sRandomMapMusicPool)];
+
+    return sRandomMapMusic;
+}
+
 u16 GetLocationMusic(struct WarpData *warp)
 {
     if (NoMusicInSootopolisWithLegendaries(warp) == TRUE)
@@ -1243,6 +1290,7 @@ u16 GetCurrLocationDefaultMusic(void)
         return MUS_DESERT;
 
     music = GetLocationMusic(&gSaveBlock1Ptr->location);
+    music = ResolveRandomMapMusic(&gSaveBlock1Ptr->location, music);
     if (music != MUS_ROUTE118)
     {
         return music;
@@ -1259,6 +1307,7 @@ u16 GetCurrLocationDefaultMusic(void)
 u16 GetWarpDestinationMusic(void)
 {
     u16 music = GetLocationMusic(&sWarpDestination);
+    music = ResolveRandomMapMusic(&sWarpDestination, music);
     if (music != MUS_ROUTE118)
     {
         return music;

@@ -400,6 +400,12 @@ extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Giddy;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_UnusedMauvilleOldMan1;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_UnusedMauvilleOldMan2;
 extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_ApricornTree;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_DpClerk;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_DpOldMan;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_DpTeala;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_DpFatMan;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_DpBlackBelt;
+extern const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_DpScientist;
 
 const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM_OBJ_EVENT_GFX] = {
     [OBJ_EVENT_GFX_BRENDAN_NORMAL] =           &gObjectEventGraphicsInfo_BrendanNormal,
@@ -645,6 +651,12 @@ const struct ObjectEventGraphicsInfo *const gObjectEventGraphicsInfoPointers[NUM
     [OBJ_EVENT_GFX_OW_MON] =                   &gObjectEventGraphicsInfo_Follower,
     [OBJ_EVENT_GFX_LIGHT_SPRITE] =             &gObjectEventGraphicsInfo_BallLight,
     [OBJ_EVENT_GFX_APRICORN_TREE] =            &gObjectEventGraphicsInfo_ApricornTree,
+    [OBJ_EVENT_GFX_DP_CLERK] =                 &gObjectEventGraphicsInfo_DpClerk,
+    [OBJ_EVENT_GFX_DP_OLD_MAN] =               &gObjectEventGraphicsInfo_DpOldMan,
+    [OBJ_EVENT_GFX_DP_TEALA] =                 &gObjectEventGraphicsInfo_DpTeala,
+    [OBJ_EVENT_GFX_DP_FAT_MAN] =               &gObjectEventGraphicsInfo_DpFatMan,
+    [OBJ_EVENT_GFX_DP_BLACK_BELT] =            &gObjectEventGraphicsInfo_DpBlackBelt,
+    [OBJ_EVENT_GFX_DP_SCIENTIST] =             &gObjectEventGraphicsInfo_DpScientist,
 #if IS_FRLG
     [OBJ_EVENT_GFX_RED_NORMAL] =               &gObjectEventGraphicsInfo_RedNormal,
     [OBJ_EVENT_GFX_RED_BIKE] =                 &gObjectEventGraphicsInfo_RedBike,

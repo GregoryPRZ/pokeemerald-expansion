@@ -1,4 +1,6 @@
-const u32 gObjectEventPic_BrendanNormalRunning[] = INCBIN_U32("graphics/object_events/pics/people/brendan/walking.4bpp", "graphics/object_events/pics/people/brendan/running.4bpp");
+const u32 gObjectEventPic_LucasWalk[] = INCGFX_U32("graphics/object_events/pics/people/lucas/lucas_walk.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_LucasRun[] = INCGFX_U32("graphics/object_events/pics/people/lucas/lucas_run.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u16 gObjectEventPal_Lucas[] = INCGFX_U16("graphics/object_events/palettes/lucas.pal", ".gbapal");
 const u16 gObjectEventPal_Brendan[] = INCGFX_U16("graphics/object_events/palettes/brendan.pal", ".gbapal");
 const u32 gObjectEventPic_RubySapphireBrendanNormal[] = INCGFX_U32("graphics/object_events/pics/people/ruby_sapphire_brendan/walking.png", ".4bpp", "-mwidth 2 -mheight 4");
 const u32 gObjectEventPic_RubySapphireBrendanRunning[] = INCGFX_U32("graphics/object_events/pics/people/ruby_sapphire_brendan/running.png", ".4bpp", "-mwidth 2 -mheight 4");
@@ -31,7 +33,9 @@ const u32 gObjectEventPic_MayDecorating[] = INCGFX_U32("graphics/object_events/p
 const u32 gObjectEventPic_BrendanUnderwater[] = INCGFX_U32("graphics/object_events/pics/people/brendan/underwater.png", ".4bpp", "-mwidth 4 -mheight 4");
 const u32 gObjectEventPic_MayUnderwater[] = INCGFX_U32("graphics/object_events/pics/people/may/underwater.png", ".4bpp", "-mwidth 4 -mheight 4");
 const u16 gObjectEventPal_PlayerUnderwater[] = INCGFX_U16("graphics/object_events/palettes/player_underwater.pal", ".gbapal");
-const u32 gObjectEventPic_MayNormalRunning[] = INCBIN_U32("graphics/object_events/pics/people/may/walking.4bpp", "graphics/object_events/pics/people/may/running.4bpp");
+const u32 gObjectEventPic_DawnWalk[] = INCGFX_U32("graphics/object_events/pics/people/dawn/dawn_walk.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u32 gObjectEventPic_DawnRun[] = INCGFX_U32("graphics/object_events/pics/people/dawn/dawn_run.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u16 gObjectEventPal_Dawn[] = INCGFX_U16("graphics/object_events/palettes/dawn.pal", ".gbapal");
 const u16 gObjectEventPal_May[] = INCGFX_U16("graphics/object_events/palettes/may.pal", ".gbapal");
 const u16 gObjectEventPal_MayReflection[] = INCGFX_U16("graphics/object_events/palettes/may_reflection.pal", ".gbapal");
 const u32 gObjectEventPic_RubySapphireMayNormal[] = INCGFX_U32("graphics/object_events/pics/people/ruby_sapphire_may/walking.png", ".4bpp", "-mwidth 2 -mheight 4");
@@ -467,6 +471,18 @@ const u32 gFieldEffectObjectPic_CaveDust[] = INCGFX_U32("graphics/field_effects/
 const u16 gFieldEffectObjectPalette_CaveDust[] = INCGFX_U16("graphics/field_effects/palettes/cave_dust.pal", ".gbapal");
 
 const u32 gObjectEventPic_ApricornTree[] = INCGFX_U32("graphics/object_events/pics/misc/apricorn_tree.png", ".4bpp", "-mwidth 2 -mheight 2");
+const u32 gObjectEventPic_DpClerk[] = INCGFX_U32("graphics/object_events/pics/people/dp_clerk.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u16 gObjectEventPal_DpClerk[] = INCGFX_U16("graphics/object_events/pics/people/dp_clerk.png", ".gbapal");
+const u32 gObjectEventPic_DpOldMan[] = INCGFX_U32("graphics/object_events/pics/people/dp_old_man.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u16 gObjectEventPal_DpOldMan[] = INCGFX_U16("graphics/object_events/pics/people/dp_old_man.png", ".gbapal");
+const u32 gObjectEventPic_DpTeala[] = INCGFX_U32("graphics/object_events/pics/people/dp_teala.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u16 gObjectEventPal_DpTeala[] = INCGFX_U16("graphics/object_events/pics/people/dp_teala.png", ".gbapal");
+const u32 gObjectEventPic_DpFatMan[] = INCGFX_U32("graphics/object_events/pics/people/dp_fat_man.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u16 gObjectEventPal_DpFatMan[] = INCGFX_U16("graphics/object_events/pics/people/dp_fat_man.png", ".gbapal");
+const u32 gObjectEventPic_DpBlackBelt[] = INCGFX_U32("graphics/object_events/pics/people/dp_black_belt.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u16 gObjectEventPal_DpBlackBelt[] = INCGFX_U16("graphics/object_events/pics/people/dp_black_belt.png", ".gbapal");
+const u32 gObjectEventPic_DpScientist[] = INCGFX_U32("graphics/object_events/pics/people/dp_scientist.png", ".4bpp", "-mwidth 4 -mheight 4");
+const u16 gObjectEventPal_DpScientist[] = INCGFX_U16("graphics/object_events/pics/people/dp_scientist.png", ".gbapal");
 
 const u32 gFieldEffectObjectPic_ShinySparkle[] = INCGFX_U32("graphics/field_effects/pics/shiny_sparkle.png", ".4bpp", "-mwidth 2 -mheight 4");
 

@@ -9330,7 +9330,7 @@
       "width": 23,
       "height": 17,
       "primary_tileset": "gTileset_Building",
-      "secondary_tileset": "gTileset_BattleDome",
+      "secondary_tileset": "gTileset_EmeraldBattleTower",
       "border_filepath": "data/layouts/EmeraldTower_Lobby/border.bin",
       "blockdata_filepath": "data/layouts/EmeraldTower_Lobby/map.bin",
       "layout_version": "emerald"
@@ -9344,6 +9344,17 @@
       "secondary_tileset": "gTileset_BattleDome",
       "border_filepath": "data/layouts/EmeraldTower_BattleArena/border.bin",
       "blockdata_filepath": "data/layouts/EmeraldTower_BattleArena/map.bin",
+      "layout_version": "emerald"
+    },
+    {
+      "id": "LAYOUT_EMERALD_TOWER_LOBBY_1F",
+      "name": "EmeraldTower_Lobby_1F_Layout",
+      "width": 23,
+      "height": 17,
+      "primary_tileset": "gTileset_Building",
+      "secondary_tileset": "gTileset_EmeraldBattleTower",
+      "border_filepath": "data/layouts/EmeraldTower_Lobby_1F/border.bin",
+      "blockdata_filepath": "data/layouts/EmeraldTower_Lobby_1F/map.bin",
       "layout_version": "emerald"
     }
   ]

@@ -2,7 +2,7 @@
   "id": "MAP_EMERALD_TOWER_LOBBY",
   "name": "EmeraldTower_Lobby",
   "layout": "LAYOUT_EMERALD_TOWER_LOBBY",
-  "music": "MUS_PL_B_FACTORY",
+  "music": "MUS_RANDOM",
   "region_map_section": "MAPSEC_BATTLE_FRONTIER",
   "requires_flash": false,
   "weather": "WEATHER_NONE",
@@ -15,9 +15,9 @@
   "connections": null,
   "object_events": [
     {
-      "graphics_id": "OBJ_EVENT_GFX_SCOTT",
+      "graphics_id": "OBJ_EVENT_GFX_DP_TEALA",
       "x": 11,
-      "y": 13,
+      "y": 10,
       "elevation": 0,
       "movement_type": "MOVEMENT_TYPE_NONE",
       "movement_range_x": 0,
@@ -28,9 +28,9 @@
       "flag": "0"
     },
     {
-      "graphics_id": "OBJ_EVENT_GFX_TEALA",
-      "x": 17,
-      "y": 10,
+      "graphics_id": "OBJ_EVENT_GFX_DP_TEALA",
+      "x": 15,
+      "y": 4,
       "elevation": 0,
       "movement_type": "MOVEMENT_TYPE_NONE",
       "movement_range_x": 0,
@@ -41,76 +41,11 @@
       "flag": "0"
     },
     {
-      "graphics_id": "OBJ_EVENT_GFX_MART_EMPLOYEE",
-      "x": 2,
-      "y": 13,
-      "elevation": 0,
-      "movement_type": "MOVEMENT_TYPE_FACE_RIGHT",
-      "movement_range_x": 0,
-      "movement_range_y": 0,
-      "trainer_type": "TRAINER_TYPE_NONE",
-      "trainer_sight_or_berry_tree_id": "0",
-      "script": "EmeraldTower_Lobby_EventScript_StrategyShop",
-      "flag": "0"
-    },
-    {
-      "graphics_id": "OBJ_EVENT_GFX_MART_EMPLOYEE",
-      "x": 2,
-      "y": 14,
-      "elevation": 0,
-      "movement_type": "MOVEMENT_TYPE_FACE_RIGHT",
-      "movement_range_x": 0,
-      "movement_range_y": 0,
-      "trainer_type": "TRAINER_TYPE_NONE",
-      "trainer_sight_or_berry_tree_id": "0",
-      "script": "EmeraldTower_Lobby_EventScript_BerryShop",
-      "flag": "0"
-    },
-    {
-      "graphics_id": "OBJ_EVENT_GFX_MART_EMPLOYEE",
-      "x": 20,
-      "y": 13,
-      "elevation": 0,
-      "movement_type": "MOVEMENT_TYPE_FACE_LEFT",
-      "movement_range_x": 0,
-      "movement_range_y": 0,
-      "trainer_type": "TRAINER_TYPE_NONE",
-      "trainer_sight_or_berry_tree_id": "0",
-      "script": "EmeraldTower_Lobby_EventScript_FormChangeShop",
-      "flag": "0"
-    },
-    {
-      "graphics_id": "OBJ_EVENT_GFX_MART_EMPLOYEE",
-      "x": 20,
-      "y": 14,
-      "elevation": 0,
-      "movement_type": "MOVEMENT_TYPE_FACE_LEFT",
-      "movement_range_x": 0,
-      "movement_range_y": 0,
-      "trainer_type": "TRAINER_TYPE_NONE",
-      "trainer_sight_or_berry_tree_id": "0",
-      "script": "EmeraldTower_Lobby_EventScript_MegaStoneShop",
-      "flag": "0"
-    },
-    {
-      "graphics_id": "OBJ_EVENT_GFX_MART_EMPLOYEE",
-      "x": 20,
-      "y": 15,
-      "elevation": 0,
-      "movement_type": "MOVEMENT_TYPE_FACE_LEFT",
-      "movement_range_x": 0,
-      "movement_range_y": 0,
-      "trainer_type": "TRAINER_TYPE_NONE",
-      "trainer_sight_or_berry_tree_id": "0",
-      "script": "EmeraldTower_Lobby_EventScript_ZCrystalShop",
-      "flag": "0"
-    },
-    {
       "graphics_id": "OBJ_EVENT_GFX_SPECIES(DRIFBLIM)",
-      "x": 7,
-      "y": 11,
+      "x": 4,
+      "y": 14,
       "elevation": 0,
-      "movement_type": "MOVEMENT_TYPE_NONE",
+      "movement_type": "MOVEMENT_TYPE_WALK_SLOWLY_IN_PLACE_LEFT",
       "movement_range_x": 0,
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NONE",
@@ -119,9 +54,9 @@
       "flag": "0"
     },
     {
-      "graphics_id": "OBJ_EVENT_GFX_GENTLEMAN",
-      "x": 5,
-      "y": 10,
+      "graphics_id": "OBJ_EVENT_GFX_DP_OLD_MAN",
+      "x": 7,
+      "y": 4,
       "elevation": 0,
       "movement_type": "MOVEMENT_TYPE_NONE",
       "movement_range_x": 0,
@@ -130,9 +65,76 @@
       "trainer_sight_or_berry_tree_id": "0",
       "script": "EmeraldTower_Lobby_EventScript_BattleHost",
       "flag": "0"
+    },
+    {
+      "graphics_id": "OBJ_EVENT_GFX_DP_BLACK_BELT",
+      "x": 18,
+      "y": 14,
+      "elevation": 0,
+      "movement_type": "MOVEMENT_TYPE_JOG_IN_PLACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "EmeraldTower_Lobby_EventScript_TrainerHelp",
+      "flag": "0"
+    },
+    {
+      "graphics_id": "OBJ_EVENT_GFX_SPECIES(URSHIFU_SINGLE_STRIKE)",
+      "x": 18,
+      "y": 15,
+      "elevation": 0,
+      "movement_type": "MOVEMENT_TYPE_WALK_SLOWLY_IN_PLACE_UP",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "NULL",
+      "flag": "0"
+    },
+    {
+      "graphics_id": "OBJ_EVENT_GFX_DP_FAT_MAN",
+      "x": 7,
+      "y": 13,
+      "elevation": 0,
+      "movement_type": "MOVEMENT_TYPE_WANDER_RIGHT_AND_LEFT",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "EmeraldTower_Lobby_EventScript_RelearnerHelp",
+      "flag": "0"
+    },
+    {
+      "graphics_id": "OBJ_EVENT_GFX_DP_SCIENTIST",
+      "x": 15,
+      "y": 8,
+      "elevation": 0,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN_LEFT_AND_RIGHT",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NONE",
+      "trainer_sight_or_berry_tree_id": "0",
+      "script": "EmeraldTower_Lobby_EventScript_BoxesHelp",
+      "flag": "0"
     }
   ],
-  "warp_events": [],
+  "warp_events": [
+    {
+      "x": 2,
+      "y": 11,
+      "elevation": 0,
+      "dest_map": "MAP_EMERALD_TOWER_LOBBY_1F",
+      "dest_warp_id": "0"
+    },
+    {
+      "x": 20,
+      "y": 11,
+      "elevation": 0,
+      "dest_map": "MAP_EMERALD_TOWER_LOBBY_1F",
+      "dest_warp_id": "1"
+    }
+  ],
   "coord_events": [],
   "bg_events": [],
   "region": "REGION_HOENN"

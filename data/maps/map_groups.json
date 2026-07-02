@@ -1164,6 +1164,7 @@
   ],
   "gMapGroup_EmeraldTower": [
     "EmeraldTower_Lobby",
-    "EmeraldTower_BattleArena"
+    "EmeraldTower_BattleArena",
+    "EmeraldTower_Lobby_1F"
   ]
 }
