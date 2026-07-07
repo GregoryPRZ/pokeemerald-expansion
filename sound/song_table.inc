@@ -993,7 +993,22 @@ gSongTable::
 	song se_dp_menu_select, MUSIC_PLAYER_SE2, 2
 	song se_dp_cancel, MUSIC_PLAYER_SE2, 2
 	song mus_dp_lounge, MUSIC_PLAYER_BGM, 0
-
+    song mus_pkmn_bw12_010, 0, 0
+    song mus_pkmn_bw12_017, 0, 0
+    song mus_pkmn_bw12_128, 0, 0
+    song mus_pkmn_bw12_132, 0, 0
+    song mus_pkmn_bw12_133, 0, 0
+    song mus_pkmn_bw12_166, 0, 0
+    song mus_pkmn_bw12_182, 0, 0
+    song mus_pkmn_bw12_183, 0, 0
+    song mus_pkmn_bw12_191, 0, 0
+    song mus_pkmn_bw12_193, 0, 0
+    song mus_pkmn_bw12_194, 0, 0
+    song mus_pkmn_bw12_195, 0, 0
+    song mus_pkmn_bw12_196, 0, 0
+    song mus_pkmn_bw12_198, 0, 0
+    song mus_pkmn_bw12_201, 0, 0
+	
 	.align 2
 dummy_song_header:
 	.byte 0, MUSIC_PLAYER_BGM, 0, 0
