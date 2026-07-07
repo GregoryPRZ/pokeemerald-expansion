@@ -73,13 +73,13 @@ SoundMain_4:
 SoundMain_5:
 	str r5, [sp, 0x8]
 	ldr r6, lt_PCM_DMA_BUF_SIZE
-	ldr r3, lt_SoundMainRAM
+	ldr r3, lt_SoundMainRAM_Buffer
 	bx r3
 
 	.align 2, 0
 lt_SOUND_INFO_PTR:        .word SOUND_INFO_PTR
 lt_ID_NUMBER:             .word ID_NUMBER
-lt_SoundMainRAM:          .word SoundMainRAM + 1
+lt_SoundMainRAM_Buffer:   .word SoundMainRAM_Buffer + 1
 lt_REG_VCOUNT:            .word REG_VCOUNT
 lt_o_SoundInfo_pcmBuffer: .word o_SoundInfo_pcmBuffer
 lt_PCM_DMA_BUF_SIZE:      .word PCM_DMA_BUF_SIZE
@@ -159,11 +159,244 @@ lt_PCM_DMA_BUF_SIZE:      .word PCM_DMA_BUF_SIZE
 
 	thumb_func_start SoundMainRAM
 SoundMainRAM:
-	ldrb r3, [r0, o_SoundInfo_reverb]
-	cmp r3, 0
-	beq SoundMainRAM_NoReverb
-	adr r1, SoundMainRAM_Reverb
+	/* load Reverb level and check if we need to apply it */
+	str r4, [sp, #ARG_BUFFER_POS_INDEX_HINT]
+	/*
+	 * okay, before the actual mixing starts
+	 * the volume and envelope calculation takes place
+	 */
+	mov r4, r8  @ r4 = buffer length
+	/*
+	 * this stores the buffer length to a backup location
+	 */
+	str r4, [sp, #ARG_FRAME_LENGTH]
+	/* init channel loop */
+	ldr r4, [sp, #ARG_PCM_STRUCT]           @ r4 = main work area pointer
+	ldr r0, [r4, #VAR_DEF_PITCH_FAC]        @ r0 = samplingrate pitch factor
+	mov r12, r0
+	ldrb r0, [r4, #VAR_MAX_CHN]
+	add r4, #VAR_FIRST_CHN                  @ r4 = Base channel Offset (Channel #0)
+
+C_channel_state_loop:
+	/* this is the main channel processing loop */
+	str r0, [sp, #ARG_REMAIN_CHN]
+	ldr r3, [r4, #o_SoundChannel_wav]
+	ldrb r6, [r4, #o_SoundChannel_statusFlags]           @ r6 will hold the channel status
+	movs r0, #0xC7                       @ check if any of the channel status flags is set
+	tst r0, r6                          @ check if none of the flags is set
+	beq C_skip_channel
+	/* check channel flags */
+	lsl r0, r6, #25                     @ shift over the SOUND_CHANNEL_SF_START to CARRY
+	bcc C_adsr_echo_check               @ continue with normal channel procedure
+	/* check leftmost bit */
+	bmi C_stop_channel                  @ SOUND_CHANNEL_SF_START | SOUND_CHANNEL_SF_STOP -> stop directly
+	/* channel init procedure */
+	movs r6, #SOUND_CHANNEL_SF_ENV_ATTACK
+	/* enabled compression if sample flag is set */
+	movs r0, r3                               @ r0 = o_SoundChannel_wav
+	add r0, #o_WaveData_data                  @ r0 = wave data offset
+	ldr r2, [r3, #o_WaveData_size]
+	cmp r2, #0
+	beq C_channel_init_synth
+	ldrb r5, [r3, #o_WaveData_type]
+	lsl r5, r5, #31
+	ldrb r5, [r4, #o_SoundChannel_type]
+	bmi C_channel_init_comp
+	lsl r5, r5, #27                     @ shift TONEDATA_TYPE_REV flag to SIGN
+	bmi C_channel_init_noncomp_reverse
+	/* Pokemon games seem to init channels differently than other m4a games */
+C_channel_init_noncomp_forward:
+	ldr r1, [r4, #o_SoundChannel_count]
+	add r0, r1
+	sub r2, r1
+	b C_channel_init_check_loop
+C_channel_init_synth:
+	mov r5, #TONEDATA_TYPE_SPL
+	strb r5, [r4, #o_SoundChannel_type]
+	ldrb r1, [r3, #(o_WaveData_data + SYNTH_TYPE)]
+	cmp r1, #2
+	bne C_channel_init_check_loop
+	/* start triangular synth wave at 90 degree phase
+	 * to avoid a pop sound at the start of the wave */
+	mov r5, #0x40
+	lsl r5, #24
+	str r5, [r4, #o_SoundChannel_fw]
+	mov r5, #0
+	b C_channel_init_check_loop_no_fine_pos
+C_channel_init_noncomp_reverse:
+	add r0, r2
+	ldr r1, [r4, #o_SoundChannel_count]
+	sub r0, r1
+	sub r2, r1
+	b C_channel_init_check_loop
+C_channel_init_comp:
+	mov r0, #TONEDATA_TYPE_CMP
+	orr r5, r0
+	strb r5, [r4, #o_SoundChannel_type]
+	lsl r5, r5, #27                     @ shift TONEDATA_TYPE_REV flag to SIGN
+	bmi C_channel_init_comp_reverse
+C_channel_init_comp_forward:
+	ldr r0, [r4, #o_SoundChannel_count]
+	sub r2, r0
+	b C_channel_init_check_loop
+C_channel_init_comp_reverse:
+	ldr r1, [r4, #o_SoundChannel_count]
+	sub r2, r1
+	mov r0, r2
+C_channel_init_check_loop:
+	movs r5, #0                          @ initial envelope = #0
+	str r5, [r4, #o_SoundChannel_fw]
+C_channel_init_check_loop_no_fine_pos:
+	str r0, [r4, #o_SoundChannel_currentPointer]
+	str r2, [r4, #o_SoundChannel_count]
+	strb r5, [r4, #o_SoundChannel_envelopeVolume]
+	mov r2, #CHN_SAMPLE_STOR            @ offset is too large to be used in one instruction
+	strb r5, [r4, r2]
+	/* enabled loop if required */
+	ldrb r2, [r3, #o_WaveData_flags]
+	lsr r0, r2, #6
+	beq C_adsr_attack
+	/* loop enabled here */
+	add r6, #SOUND_CHANNEL_SF_LOOP
+	b C_adsr_attack
+
+C_adsr_echo_check:
+	/* this is the normal ADSR procedure without init */
+	ldrb r5, [r4, #o_SoundChannel_envelopeVolume]
+	lsl r0, r6, #29                     @ SOUND_CHANNEL_SF_IEC --> bit 31 (sign bit)
+	bpl C_adsr_release_check
+	/* pseudo echo handler */
+	ldrb r0, [r4, #o_SoundChannel_pseudoEchoLength]
+	sub r0, #1
+	strb r0, [r4, #o_SoundChannel_pseudoEchoLength]
+	bhi C_channel_vol_calc              @ continue normal if channel is still on
+
+C_stop_channel:
+	movs r0, #0
+	strb r0, [r4, #o_SoundChannel_statusFlags]
+
+C_skip_channel:
+	/* go to end of the channel loop */
+	b C_end_channel_state_loop
+
+C_adsr_release_check:
+	lsl r0, r6, #25                      @ SOUND_CHANNEL_SF_STOP --> bit 31 (sign bit)
+	bpl C_adsr_decay_check
+	/* release handler */
+	ldrb r0, [r4, #o_SoundChannel_release]
+	mul r5, r5, r0
+	lsr r5, #8
+	ble C_adsr_released
+	/* pseudo echo init handler */
+	ldrb r0, [r4, #o_SoundChannel_pseudoEchoVolume]
+	cmp r5, r0
+	bhi C_channel_vol_calc
+
+C_adsr_released:
+	/* if volume released to #0 */
+	ldrb r5, [r4, #o_SoundChannel_pseudoEchoVolume]
+	cmp r5, #0
+	beq C_stop_channel
+	/* pseudo echo volume handler */
+	movs r0, #SOUND_CHANNEL_SF_IEC
+	orr r6, r0                          @ set the echo flag
+	b C_adsr_save_and_finalize
+
+C_adsr_decay_check:
+	/* check if decay is active */
+	movs r2, #(SOUND_CHANNEL_SF_ENV_DECAY+SOUND_CHANNEL_SF_ENV_SUSTAIN)
+	and r2, r6
+	cmp r2, #SOUND_CHANNEL_SF_ENV_DECAY
+	bne C_adsr_attack_check             @ decay not active yet
+	/* decay handler */
+	ldrb r0, [r4, #o_SoundChannel_decay]
+	mul r5, r5, r0
+	lsr r5, r5, #8
+	ldrb r0, [r4, #o_SoundChannel_sustain]
+	cmp r5, r0
+	bhi C_channel_vol_calc              @ sample didn't decay yet
+	/* sustain handler */
+	movs r5, r0                          @ current level = sustain level
+	beq C_adsr_released                 @ sustain level #0 --> branch
+	/* step to next phase otherweise */
+	b C_adsr_next_state
+
+C_adsr_attack_check:
+	/* attack handler */
+	cmp r2, #SOUND_CHANNEL_SF_ENV_ATTACK
+	bne C_channel_vol_calc              @ if it isn't in attack attack phase, it has to be in sustain (keep vol) --> branch
+
+C_adsr_attack:
+	/* apply attack summand */
+	ldrb r0, [r4, #o_SoundChannel_attack]
+	add r5, r0
+	cmp r5, #0xFF
+	blo C_adsr_save_and_finalize
+	/* cap attack at 0xFF */
+	movs r5, #0xFF
+
+C_adsr_next_state:
+	/* switch to next adsr phase */
+	sub r6, #1
+
+C_adsr_save_and_finalize:
+	/* store channel status */
+	strb r6, [r4, #o_SoundChannel_statusFlags]
+
+C_channel_vol_calc:
+	/* store the calculated ADSR level */
+	strb r5, [r4, #o_SoundChannel_envelopeVolume]
+	/* apply master volume */
+	ldr r0, [sp, #ARG_PCM_STRUCT]
+	ldrb r0, [r0, #VAR_MASTER_VOL]
+	add r0, #1
+	mul r5, r0
+	/* left side volume */
+	ldrb r0, [r4, #o_SoundChannel_leftVolume]
+	mul r0, r5
+	lsr r0, #13
+	mov r10, r0                         @ r10 = left volume
+	/* right side volume */
+	ldrb r0, [r4, #o_SoundChannel_rightVolume]
+	mul r0, r5
+	lsr r0, #13
+	mov r11, r0                         @ r11 = right volume
+	/*
+	 * Now we get closer to actual mixing:
+	 * For looped samples some additional operations are required
+	 */
+	movs r0, #SOUND_CHANNEL_SF_LOOP
+	and r0, r6
+	beq C_sample_loop_setup_skip
+	/* loop setup handler */
+	add r3, #o_WaveData_loopStart
+	ldmia r3!, {r0, r1}                   @ r0 = loop start, r1 = loop end
+	ldrb r2, [r4, #o_SoundChannel_type]
+	lsl r2, r2, #MODE_FLGSH_SIGN_REVERSE
+	bcs C_sample_loop_setup_comp
+	add r3, r0                          @ r3 = loop start position (absolute)
+	b C_sample_loop_setup_finish
+C_sample_loop_setup_comp:
+	mov r3, r0
+C_sample_loop_setup_finish:
+	str r3, [sp, #ARG_LOOP_START_POS]
+	sub r0, r1, r0
+
+C_sample_loop_setup_skip:
+	/* do the rest of the setup */
+	str r0, [sp, #ARG_LOOP_LENGTH]      @ if loop is off --> r0 = 0x0
+	ldr r5, hq_buffer_literal
+	ldr r2, [r4, #o_SoundChannel_count]
+	ldr r3, [r4, #o_SoundChannel_currentPointer]
+	ldrb r0, [r4, #o_SoundChannel_type]
+	/* switch to arm */
+	adr r1, C_mixing_setup
 	bx r1
+
+	.align 2
+hq_buffer_literal:
+	.word hq_buffer_ptr
+
 	.arm
 	.align  2
 
@@ -713,599 +946,271 @@ C_mixing_epilogue:
 	/* switch to thumb */
 	adr r0, (C_end_channel_state_loop+1)
 	bx r0
-	.thumb
-SoundMainRAM_NoReverb:
-	movs r0, 0
-	mov r1, r8
-	adds r6, r5
-	lsrs r1, 3
-	bcc SoundMainRAM_NoReverb_Ok
-	stm r5!, {r0}
-	stm r6!, {r0}
-SoundMainRAM_NoReverb_Ok:
-	lsrs r1, 1
-	bcc SoundMainRAM_NoReverb_Loop
-	stm r5!, {r0}
-	stm r6!, {r0}
-	stm r5!, {r0}
-	stm r6!, {r0}
-SoundMainRAM_NoReverb_Loop:
-	stm r5!, {r0}
-	stm r6!, {r0}
-	stm r5!, {r0}
-	stm r6!, {r0}
-	stm r5!, {r0}
-	stm r6!, {r0}
-	stm r5!, {r0}
-	stm r6!, {r0}
-	subs r1, 1
-	bgt SoundMainRAM_NoReverb_Loop
-_081DCF36:
-	ldr r4, [sp, 0x18]
-	ldr r0, [r4, o_SoundInfo_divFreq]
-	mov r12, r0
-	ldrb r0, [r4, o_SoundInfo_maxChans]
-	adds r4, o_SoundInfo_chans
 
-SoundMainRAM_ChanLoop:
-	str r0, [sp, 0x4]
-	ldr r3, [r4, o_SoundChannel_wav]
-	ldr r0, [sp, 0x14]
-	cmp r0, 0
-	beq _081DCF60
-	ldr r1, =REG_VCOUNT
-	ldrb r1, [r1]
-	cmp r1, VCOUNT_VBLANK
-	bhs _081DCF54
-	adds r1, TOTAL_SCANLINES
-_081DCF54:
-	cmp r1, r0
-	blo _081DCF60
-	b _081DD24A
+	.thumb
+	.thumb_func
+
+C_end_channel_state_loop:
+	ldr r0, [sp, #ARG_REMAIN_CHN]
+	sub r0, #1
+	ble C_main_mixer_return
+
+	add r4, #0x40
+	b C_channel_state_loop
+
+C_main_mixer_return:
+	ldr r3, [sp, #ARG_PCM_STRUCT]
+	ldrb r4, [r3, #VAR_EXT_NOISE_SHAPE_LEFT]
+	lsl r4, r4, #16
+	ldrb r5, [r3, #VAR_EXT_NOISE_SHAPE_RIGHT]
+	lsl r5, r5, #16
+.if ENABLE_REVERB==1
+	ldrb r2, [r3, #VAR_REVERB]
+	lsr r2, r2, #2
+	ldr r1, [sp, #ARG_BUFFER_POS_INDEX_HINT]
+	cmp r1, #2
+.else
+	mov r2, #0
+	mov r3, #0
+.endif
+	/* switch to arm */
+	adr r0, C_downsampler
+	bx r0
+
+	.arm
+	.align 2
+
+C_downsampler:
+	ldr r8, [sp, #ARG_FRAME_LENGTH]
+	ldr r9, [sp, #ARG_BUFFER_POS]
+.if ENABLE_REVERB==1
+	orr r2, r2, r2, lsl#16
+	movne r3, r8
+	addeq r3, r3, #VAR_PCM_BUFFER
+	subeq r3, r3, r9
+.endif
+	ldr r10, hq_buffer_literal
+	mov r11, #0xFF00
+	mov lr, #0xC0000000
+
+C_downsampler_loop:
+	ldmia r10, {r0, r1}
+	add r12, r4, r0         @ left sample #1
+	adds r4, r12, r12
+	eorvs r12, lr, r4, asr#31
+	and r4, r12, #0x007F0000
+	and r6, r11, r12, lsr#15
+
+	add r12, r5, r0, lsl#16 @ right sample #1
+	adds r5, r12, r12
+	eorvs r12, lr, r5, asr#31
+	and r5, r12, #0x007F0000
+	and r7, r11, r12, lsr#15
+
+	add r12, r4, r1         @ left sample #2
+	adds r4, r12, r12
+	eorvs r12, lr, r4, asr#31
+	and r4, r12, #0x007F0000
+	and r12, r11, r12, lsr#15
+	orr r6, r12, r6, lsr#8
+
+	add r12, r5, r1, lsl#16 @ right sample #2
+	adds r5, r12, r12
+	eorvs r12, lr, r5, asr#31
+	and r5, r12, #0x007F0000
+	and r12, r11, r12, lsr#15
+	orr r7, r12, r7, lsr#8
+
+.if ENABLE_REVERB==1
+	ldrsh r12, [r9, r3]!
+
+	mov r1, r12, asr#8
+	mov r12, r12, lsl#24
+	mov r0, r12, asr#24
+
+	add r9, r9, #PCM_DMA_BUF_SIZE      @ \ ldrsh  r12, [r9, #0x630]!
+	ldrsh r12, [r9]                    @ / is unfortunately not a valid instruction
+
+	add r1, r1, r12, asr#8
+	mov r12, r12, lsl#24
+	add r0, r0, r12, asr#24
+
+	ldrsh r12, [r9, -r3]!
+
+	add r1, r1, r12, asr#8
+	mov r12, r12, lsl#24
+	add r0, r0, r12, asr#24
+
+	strh r6, [r9]                     @ \ strh  r6, [r9], #-0x630
+	sub r9, r9, #PCM_DMA_BUF_SIZE    @ / is unfortunately not a valid instruction
+	ldrsh r12, [r9]
+	strh r7, [r9], #2
+
+	add r1, r1, r12, asr#8
+	mov r12, r12, lsl#24
+	add r0, r0, r12, asr#24
+
+	mul r1, r2, r1
+	mul r0, r2, r0
+
+	stmia r10!, {r0, r1}
+.else /* if ENABLE_REVERB==0 */
+	mov r0, #PCM_DMA_BUF_SIZE
+	strh r6, [r9, r0]
+	strh r7, [r9], #2
+
+	stmia r10!, {r2, r3}
+.endif
+	subs r8, #2
+	bgt C_downsampler_loop
+
+	/* switch to thumb */
+	adr r0, (C_downsampler_return+1)
+	bx r0
 
 	.pool
 
-_081DCF60:
-	ldrb r6, [r4, o_SoundChannel_statusFlags]
-	movs r0, SOUND_CHANNEL_SF_ON
-	tst r0, r6
-	bne _081DCF6A
-	b _081DD240
-_081DCF6A:
-	movs r0, SOUND_CHANNEL_SF_START
-	tst r0, r6
-	beq _081DCFA0
-	movs r0, SOUND_CHANNEL_SF_STOP
-	tst r0, r6
-	bne _081DCFB0
-	movs r6, SOUND_CHANNEL_SF_ENV_ATTACK
-	strb r6, [r4, o_SoundChannel_statusFlags]
-	adds r0, r3, 0
-	adds r0, o_WaveData_data
-	ldr r1, [r4, o_SoundChannel_count]
-	adds r0, r1
-	str r0, [r4, o_SoundChannel_currentPointer]
-	ldr r0, [r3, o_WaveData_size]
-	subs r0, r1
-	str r0, [r4, o_SoundChannel_count]
-	movs r5, 0
-	strb r5, [r4, o_SoundChannel_envelopeVolume]
-	str r5, [r4, o_SoundChannel_fw]
-	ldrb r2, [r3, o_WaveData_flags]
-	movs r0, WAVE_DATA_FLAG_LOOP
-	tst r0, r2
-	beq _081DCFF8
-	movs r0, SOUND_CHANNEL_SF_LOOP
-	orrs r6, r0
-	strb r6, [r4, o_SoundChannel_statusFlags]
-	b _081DCFF8
-_081DCFA0:
-	ldrb r5, [r4, o_SoundChannel_envelopeVolume]
-	movs r0, SOUND_CHANNEL_SF_IEC
-	tst r0, r6
-	beq _081DCFB6
-	ldrb r0, [r4, o_SoundChannel_pseudoEchoLength]
-	subs r0, 1
-	strb r0, [r4, o_SoundChannel_pseudoEchoLength]
-	bhi _081DD006
-_081DCFB0:
-	movs r0, 0
-	strb r0, [r4, o_SoundChannel_statusFlags]
-	b _081DD240
-_081DCFB6:
-	movs r0, SOUND_CHANNEL_SF_STOP
-	tst r0, r6
-	beq _081DCFD6
-	ldrb r0, [r4, o_SoundChannel_release]
-	muls r5, r0
-	lsrs r5, 8
-	ldrb r0, [r4, o_SoundChannel_pseudoEchoVolume]
-	cmp r5, r0
-	bhi _081DD006
-_081DCFC8:
-	ldrb r5, [r4, o_SoundChannel_pseudoEchoVolume]
-	cmp r5, 0
-	beq _081DCFB0
-	movs r0, SOUND_CHANNEL_SF_IEC
-	orrs r6, r0
-	strb r6, [r4, o_SoundChannel_statusFlags]
-	b _081DD006
-_081DCFD6:
-	movs r2, SOUND_CHANNEL_SF_ENV
-	ands r2, r6
-	cmp r2, SOUND_CHANNEL_SF_ENV_DECAY
-	bne _081DCFF4
-	ldrb r0, [r4, o_SoundChannel_decay]
-	muls r5, r0
-	lsrs r5, 8
-	ldrb r0, [r4, o_SoundChannel_sustain]
-	cmp r5, r0
-	bhi _081DD006
-	adds r5, r0, 0
-	beq _081DCFC8
-	subs r6, 0x1
-	strb r6, [r4, o_SoundChannel_statusFlags]
-	b _081DD006
-_081DCFF4:
-	cmp r2, SOUND_CHANNEL_SF_ENV_ATTACK
-	bne _081DD006
-_081DCFF8:
-	ldrb r0, [r4, o_SoundChannel_attack]
-	adds r5, r0
-	cmp r5, 0xFF
-	bcc _081DD006
-	movs r5, 0xFF
-	subs r6, 0x1
-	strb r6, [r4, o_SoundChannel_statusFlags]
-_081DD006:
-	strb r5, [r4, o_SoundChannel_envelopeVolume]
-	ldr r0, [sp, 0x18]
-	ldrb r0, [r0, o_SoundChannel_release]
-	adds r0, 0x1
-	muls r0, r5
-	lsrs r5, r0, 4
-	ldrb r0, [r4, o_SoundChannel_rightVolume]
-	muls r0, r5
-	lsrs r0, 8
-	strb r0, [r4, o_SoundChannel_envelopeVolumeRight]
-	ldrb r0, [r4, o_SoundChannel_leftVolume]
-	muls r0, r5
-	lsrs r0, 8
-	strb r0, [r4, o_SoundChannel_envelopeVolumeLeft]
-	movs r0, SOUND_CHANNEL_SF_LOOP
-	ands r0, r6
-	str r0, [sp, 0x10]
-	beq _081DD03A
-	adds r0, r3, 0
-	adds r0, o_WaveData_data
-	ldr r1, [r3, o_WaveData_loopStart]
-	adds r0, r1
-	str r0, [sp, 0xC]
-	ldr r0, [r3, o_WaveData_size]
-	subs r0, r1
-	str r0, [sp, 0x10]
-_081DD03A:
-	ldr r5, [sp, 0x8]
-	ldr r2, [r4, o_SoundChannel_count]
-	ldr r3, [r4, o_SoundChannel_currentPointer]
-	adr r0, _081DD044
-	bx r0
-	.arm
-_081DD044:
-	str r8, [sp]
-	ldr r9, [r4, o_SoundChannel_fw]
-	ldrb r10, [r4, o_SoundChannel_envelopeVolumeRight]
-	ldrb r11, [r4, o_SoundChannel_envelopeVolumeLeft]
-	ldrb r0, [r4, o_SoundChannel_type]
-	tst r0, TONEDATA_TYPE_CMP | TONEDATA_TYPE_REV
-	beq _081DD068
-	bl SoundMainRAM_Unk1
-	b _081DD228
-_081DD068:
-	mov r10, r10, lsl 16
-	mov r11, r11, lsl 16
-	ldrb r0, [r4, o_SoundChannel_type]
-	tst r0, 0x8
-	beq _081DD19C
-_081DD07C:
-	cmp r2, 0x4
-	ble _081DD0EC
-	subs r2, r2, r8
-	movgt r9, 0
-	bgt _081DD0A8
-	mov r9, r8
-	add r2, r2, r8
-	sub r8, r2, 0x4
-	sub r9, r9, r8
-	ands r2, r2, 0x3
-	moveq r2, 0x4
-_081DD0A8:
-	ldr r6, [r5]
-	ldr r7, [r5, PCM_DMA_BUF_SIZE]
-_081DD0B0:
-	ldrsb r0, [r3], 0x1
-	mul r1, r10, r0
-	bic r1, r1, 0xFF0000
-	add r6, r1, r6, ror 8
-	mul r1, r11, r0
-	bic r1, r1, 0xFF0000
-	add r7, r1, r7, ror 8
-	adds r5, r5, 0x40000000
-	bcc _081DD0B0
-	str r7, [r5, PCM_DMA_BUF_SIZE]
-	str r6, [r5], 0x4
-	subs r8, r8, 0x4
-	bgt _081DD0A8
-	adds r8, r8, r9
-	beq _081DD22C
-_081DD0EC:
-	ldr r6, [r5]
-	ldr r7, [r5, PCM_DMA_BUF_SIZE]
-_081DD0F4:
-	ldrsb r0, [r3], 0x1
-	mul r1, r10, r0
-	bic r1, r1, 0xFF0000
-	add r6, r1, r6, ror 8
-	mul r1, r11, r0
-	bic r1, r1, 0xFF0000
-	add r7, r1, r7, ror 8
-	subs r2, r2, 0x1
-	beq _081DD164
-_081DD118:
-	adds r5, r5, 0x40000000
-	bcc _081DD0F4
-	str r7, [r5, PCM_DMA_BUF_SIZE]
-	str r6, [r5], 0x4
-	subs r8, r8, 0x4
-	bgt _081DD07C
-	b _081DD22C
-_081DD134:
-	ldr r0, [sp, 0x18]
-	cmp r0, 0
-	beq _081DD158
-	ldr r3, [sp, 0x14]
-	rsb lr, r2, 0
-_081DD148:
-	adds r2, r0, r2
-	bgt _081DD1FC
-	sub lr, lr, r0
-	b _081DD148
-_081DD158:
-	pop {r4,r12}
-	mov r2, 0
-	b _081DD174
-_081DD164:
-	ldr r2, [sp, 0x10]
-	cmp r2, 0
-	ldrne r3, [sp, 0xC]
-	bne _081DD118
-_081DD174:
-	strb r2, [r4, o_SoundChannel_statusFlags]
-	mov r0, r5, lsr 30
-	bic r5, r5, 0xC0000000
-	rsb r0, r0, 0x3
-	mov r0, r0, lsl 3
-	mov r6, r6, ror r0
-	mov r7, r7, ror r0
-	str r7, [r5, PCM_DMA_BUF_SIZE]
-	str r6, [r5], 0x4
-	b _081DD234
-_081DD19C:
-	push {r4,r12}
-	ldr r1, [r4, o_SoundChannel_frequency]
-	mul r4, r12, r1
-	ldrsb r0, [r3]
-	ldrsb r1, [r3, 0x1]!
-	sub r1, r1, r0
-_081DD1B4:
-	ldr r6, [r5]
-	ldr r7, [r5, PCM_DMA_BUF_SIZE]
-_081DD1BC:
-	mul lr, r9, r1
-	add lr, r0, lr, asr 23
-	mul r12, r10, lr
-	bic r12, r12, 0xFF0000
-	add r6, r12, r6, ror 8
-	mul r12, r11, lr
-	bic r12, r12, 0xFF0000
-	add r7, r12, r7, ror 8
-	add r9, r9, r4
-	movs lr, r9, lsr 23
-	beq _081DD208
-	bic r9, r9, 0x3F800000
-	subs r2, r2, lr
-	ble _081DD134
-	subs lr, lr, 0x1
-	addeq r0, r0, r1
-_081DD1FC:
-	ldrsbne r0, [r3, lr]!
-	ldrsb r1, [r3, 0x1]!
-	sub r1, r1, r0
-_081DD208:
-	adds r5, r5, 0x40000000
-	bcc _081DD1BC
-	str r7, [r5, PCM_DMA_BUF_SIZE]
-	str r6, [r5], 0x4
-	subs r8, r8, 0x4
-	bgt _081DD1B4
-	sub r3, r3, 0x1
-	pop {r4,r12}
-_081DD228:
-	str r9, [r4, o_SoundChannel_fw]
-_081DD22C:
-	str r2, [r4, o_SoundChannel_count]
-	str r3, [r4, o_SoundChannel_currentPointer]
-_081DD234:
-	ldr r8, [sp]
-	add r0, pc, 0x1
-	bx r0
+	.align 1
 	.thumb
-_081DD240:
-	ldr r0, [sp, 0x4]
-	subs r0, 1
-	ble _081DD24A
-	adds r4, SoundChannel_size
-	b SoundMainRAM_ChanLoop
-_081DD24A:
-	ldr r0, [sp, 0x18]
-	ldr r3, =ID_NUMBER
+	.thumb_func
+
+C_downsampler_return:
+	ldr r0, [sp, #ARG_PCM_STRUCT]
+	lsr r4, #16
+	strb r4, [r0, #VAR_EXT_NOISE_SHAPE_LEFT]
+	lsr r5, #16
+	strb r5, [r0, #VAR_EXT_NOISE_SHAPE_RIGHT]
+	ldr r3, =0x68736D53                     @ this is used to indicate the interrupt handler the rendering was finished properly
 	str r3, [r0]
-	add sp, 0x1C
+	add sp, sp, #0x1C
 	pop {r0-r7}
 	mov r8, r0
 	mov r9, r1
 	mov r10, r2
 	mov r11, r3
 	pop {r3}
-_081DD25E:
-	bx r3
+	bx r3                                   @ Interwork
+
 	.pool
+
+	.arm
+	.align 2
+
+C_setup_synth:
+	ldrb r12, [r3, #SYNTH_TYPE]
+	cmp r12, #0
+	bne C_check_synth_saw
+
+	/* modulating pulse wave */
+	ldrb r6, [r3, #SYNTH_WIDTH_CHANGE_1]
+	add r2, r2, r6, lsl#24
+	ldrb r6, [r3, #SYNTH_WIDTH_CHANGE_2]
+	adds r6, r2, r6, lsl#24
+	mvnmi r6, r6
+	mov r10, r6, lsr#8
+	ldrb r1, [r3, #SYNTH_MOD_AMOUNT]
+	ldrb r0, [r3, #SYNTH_BASE_WAVE_DUTY]
+	mov r0, r0, lsl#24
+	mla r6, r10, r1, r0                 @ calculate the final duty cycle with the offset, and intensity * rotating duty cycle amount
+	stmfd sp!, {r2, r3, r9, r12}
+
+C_synth_pulse_loop:
+	ldmia r5, {r0-r3, r9, r10, r12, lr} @ load 8 samples
+	.irp reg, r0, r1, r2, r3, r9, r10, r12, lr @ 8 blocks
+	  cmp r7, r6                      @ Block #1
+	  addlo \reg, \reg, r11, lsl#6
+	  subhs \reg, \reg, r11, lsl#6
+	  adds r7, r7, r4, lsl#3
+	.endr
+
+	stmia r5!, {r0-r3, r9, r10, r12, lr} @ write 8 samples
+	subs r8, r8, #8
+	bgt C_synth_pulse_loop
+
+	ldmfd sp!, {r2, r3, r9, r12}
+	b C_end_mixing
+
+C_check_synth_saw:
+	/*
+	 * This is actually not a true saw wave
+	 * but looks pretty similar
+	 * (has a jump in the middle of the wave)
+	 */
+	subs r12, r12, #1
+	bne C_synth_triangle
+
+	mov r6, #0x300
+	mov r11, r11, lsr#1
+	bic r11, r11, #0xFF00
+	mov r12, #0x70
+
+C_synth_saw_loop:
+
+	ldmia r5, {r0, r1, r10, lr}       @ load 4 samples from memory
+	.irp reg, r0, r1, r10, lr         @ 4 blocks (some oscillator type code)
+	  adds r7, r7, r4, lsl#3
+	  rsb r9, r12, r7, lsr#24
+	  mov r6, r7, lsl#1
+	  sub r9, r9, r6, lsr#27
+	  adds r2, r9, r2, asr#1
+	  mlane \reg, r11, r2, \reg
+	.endr
+
+	stmia r5!, {r0, r1, r10, lr}
+	subs r8, r8, #4
+	bgt C_synth_saw_loop
+
+	b C_end_mixing
+
+C_synth_triangle:
+	mov r6, #0x80
+	mov r12, #0x180
+
+C_synth_triangle_loop:
+	ldmia r5, {r0, r1, r10, lr}       @ load samples from work buffer
+	.irp reg, r0, r1, r10, lr        @ 4 blocks
+	  adds r7, r7, r4, lsl#3           @ Block #1
+	  rsbpl r9, r6, r7, asr#23
+	  submi r9, r12, r7, lsr#23
+	  mla \reg, r11, r9, \reg
+	.endr
+
+	stmia r5!, {r0, r1, r10, lr}
+	subs r8, r8, #4                  @ subtract #4 from the remaining samples
+	bgt C_synth_triangle_loop
+
+	b C_end_mixing
+
+/* r0: base addr
+ * r1: len in bytes */
+F_clear_mem:
+	stmfd sp!, {r0, r2-r5, lr}
+	mov r2, #0
+	mov r3, #0
+	mov r4, #0
+	mov r5, #0
+	and lr, r1, #0x30
+	rsb lr, lr, #0x30
+	add pc, pc, lr, lsr#2
+C_clear_loop:
+	stmia r0!, {r2-r5}
+	stmia r0!, {r2-r5}
+	stmia r0!, {r2-r5}
+	stmia r0!, {r2-r5}
+	subs r1, r1, #0x40
+	bpl C_clear_loop
+	ands r1, r1, #0xC
+	ldmeqfd sp!, {r0, r2-r5, pc}
+C_clear_loop_rest:
+	stmia r0!, {r2}
+	subs r1, r1, #4
+	bgt C_clear_loop_rest
+	ldmfd sp!, {r0, r2-r5, pc}
+
+SoundMainRAM_End:
+	.syntax unified
 	thumb_func_end SoundMainRAM
 
-@ Not present in GBA SDK 3.0
-	arm_func_start SoundMainRAM_Unk1
-SoundMainRAM_Unk1:
-	ldr r6, [r4, o_SoundChannel_wav]
-	ldrb r0, [r4, o_SoundChannel_statusFlags]
-	tst r0, SOUND_CHANNEL_SF_SPECIAL
-	bne _081DD2B4
-	orr r0, r0, SOUND_CHANNEL_SF_SPECIAL
-	strb r0, [r4, o_SoundChannel_statusFlags]
-	ldrb r0, [r4, o_SoundChannel_type]
-	tst r0, TONEDATA_TYPE_REV
-	beq _081DD29C
-	ldr r1, [r6, o_WaveData_size]
-	add r1, r1, r6, lsl 1
-	add r1, r1, 0x20
-	sub r3, r1, r3
-	str r3, [r4, o_SoundChannel_currentPointer]
-_081DD29C:
-	ldrh r0, [r6, o_WaveData_type]
-	cmp r0, 0
-	beq _081DD2B4
-	sub r3, r3, r6
-	sub r3, r3, 0x10
-	str r3, [r4, o_SoundChannel_currentPointer]
-_081DD2B4:
-	push {r8,r12,lr}
-	mov r10, r10, lsl 16
-	mov r11, r11, lsl 16
-	ldr r1, [r4, o_SoundChannel_frequency]
-	ldrb r0, [r4, o_SoundChannel_type]
-	tst r0, TONEDATA_TYPE_FIX
-	movne r8, 0x800000
-	muleq r8, r12, r1
-	ldrh r0, [r6, o_WaveData_type]
-	cmp r0, 0
-	beq _081DD468
-	mov r0, 0xFF000000
-	str r0, [r4, o_SoundChannel_xpi]
-	ldrb r0, [r4, o_SoundChannel_type]
-	tst r0, TONEDATA_TYPE_REV
-	bne _081DD3C0
-	bl SoundMainRAM_Unk2
-	mov r0, r1
-	add r3, r3, 0x1
-	bl SoundMainRAM_Unk2
-	sub r1, r1, r0
-_081DD308:
-	ldr r6, [r5]
-	ldr r7, [r5, PCM_DMA_BUF_SIZE]
-_081DD310:
-	mul lr, r9, r1
-	add lr, r0, lr, asr 23
-	mul r12, r10, lr
-	bic r12, r12, 0xFF0000
-	add r6, r12, r6, ror 8
-	mul r12, r11, lr
-	bic r12, r12, 0xFF0000
-	add r7, r12, r7, ror 8
-	add r9, r9, r8
-	movs lr, r9, lsr 23
-	beq _081DD370
-	bic r9, r9, 0x3F800000
-	subs r2, r2, lr
-	ble _081DD398
-	subs lr, lr, 0x1
-	bne _081DD358
-	add r0, r0, r1
-	b _081DD364
-_081DD358:
-	add r3, r3, lr
-	bl SoundMainRAM_Unk2
-	mov r0, r1
-_081DD364:
-	add r3, r3, 0x1
-	bl SoundMainRAM_Unk2
-	sub r1, r1, r0
-_081DD370:
-	adds r5, r5, 0x40000000
-	bcc _081DD310
-	str r7, [r5, PCM_DMA_BUF_SIZE]
-	str r6, [r5], 0x4
-	ldr r6, [sp]
-	subs r6, r6, 0x4
-	str r6, [sp]
-	bgt _081DD308
-	sub r3, r3, 0x1
-	b _081DD4F0
-_081DD398:
-	ldr r0, [sp, 0x1C]
-	cmp r0, 0
-	beq _081DD4F4
-	ldr r3, [r4, o_SoundChannel_wav]
-	ldr r3, [r3, o_WaveData_loopStart]
-	rsb lr, r2, 0
-_081DD3B0:
-	adds r2, r2, r0
-	bgt _081DD358
-	sub lr, lr, r0
-	b _081DD3B0
-_081DD3C0:
-	sub r3, r3, 0x1
-	bl SoundMainRAM_Unk2
-	mov r0, r1
-	sub r3, r3, 0x1
-	bl SoundMainRAM_Unk2
-	sub r1, r1, r0
-_081DD3D8:
-	ldr r6, [r5]
-	ldr r7, [r5, PCM_DMA_BUF_SIZE]
-_081DD3E0:
-	mul lr, r9, r1
-	add lr, r0, lr, asr 23
-	mul r12, r10, lr
-	bic r12, r12, 0xFF0000
-	add r6, r12, r6, ror 8
-	mul r12, r11, lr
-	bic r12, r12, 0xFF0000
-	add r7, r12, r7, ror 8
-	add r9, r9, r8
-	movs lr, r9, lsr 23
-	beq _081DD440
-	bic r9, r9, 0x3F800000
-	subs r2, r2, lr
-	ble _081DD4F4
-	subs lr, lr, 0x1
-	bne _081DD428
-	add r0, r0, r1
-	b _081DD434
-_081DD428:
-	sub r3, r3, lr
-	bl SoundMainRAM_Unk2
-	mov r0, r1
-_081DD434:
-	sub r3, r3, 0x1
-	bl SoundMainRAM_Unk2
-	sub r1, r1, r0
-_081DD440:
-	adds r5, r5, 0x40000000
-	bcc _081DD3E0
-	str r7, [r5, PCM_DMA_BUF_SIZE]
-	str r6, [r5], 0x4
-	ldr r6, [sp]
-	subs r6, r6, 0x4
-	str r6, [sp]
-	bgt _081DD3D8
-	add r3, r3, 0x2
-	b _081DD4F0
-_081DD468:
-	ldrb r0, [r4, o_SoundChannel_type]
-	tst r0, TONEDATA_TYPE_REV
-	beq _081DD4F0
-	ldrsb r0, [r3, -0x1]!
-	ldrsb r1, [r3, -0x1]
-	sub r1, r1, r0
-_081DD480:
-	ldr r6, [r5]
-	ldr r7, [r5, 0x630]
-_081DD488:
-	mul lr, r9, r1
-	add lr, r0, lr, asr 23
-	mul r12, r10, lr
-	bic r12, r12, 0xFF0000
-	add r6, r12, r6, ror 8
-	mul r12, r11, lr
-	bic r12, r12, 0xFF0000
-	add r7, r12, r7, ror 8
-	add r9, r9, r8
-	movs lr, r9, lsr 23
-	beq _081DD4CC
-	bic r9, r9, 0x3F800000
-	subs r2, r2, lr
-	ble _081DD4F4
-	ldrsb r0, [r3, -lr]!
-	ldrsb r1, [r3, -0x1]
-	sub r1, r1, r0
-_081DD4CC:
-	adds r5, r5, 0x40000000
-	bcc _081DD488
-	str r7, [r5, 0x630]
-	str r6, [r5], 0x4
-	ldr r6, [sp]
-	subs r6, r6, 0x4
-	str r6, [sp]
-	bgt _081DD480
-	add r3, r3, 0x1
-_081DD4F0:
-	pop {r8,r12,pc}
-_081DD4F4:
-	mov r2, 0
-	strb r2, [r4, o_SoundChannel_statusFlags]
-	mov r0, r5, lsr 30
-	bic r5, r5, 0xC0000000
-	rsb r0, r0, 0x3
-	mov r0, r0, lsl 3
-	mov r6, r6, ror r0
-	mov r7, r7, ror r0
-	str r7, [r5, 0x630]
-	str r6, [r5], 0x4
-	pop {r8,r12,pc}
-	arm_func_end SoundMainRAM_Unk1
-
-@ Not present in GBA SDK 3.0
-	arm_func_start SoundMainRAM_Unk2
-SoundMainRAM_Unk2:
-	push {r0,r2,r5-r7,lr}
-	mov r0, r3, lsr 6
-	ldr r1, [r4, o_SoundChannel_xpi]
-	cmp r0, r1
-	beq _081DD594
-	str r0, [r4, o_SoundChannel_xpi]
-	mov r1, 0x21
-	mul r2, r1, r0
-	ldr r1, [r4, o_SoundChannel_wav]
-	add r2, r2, r1
-	add r2, r2, 0x10
-	ldr r5, =sDecodingBuffer
-	ldr r6, =gDeltaEncodingTable
-	mov r7, 0x40
-	ldrb lr, [r2], 1
-	strb lr, [r5], 1
-	ldrb r1, [r2], 1
-	b _081DD57C
-_081DD568:
-	ldrb r1, [r2], 1
-	mov r0, r1, lsr 4
-	ldrsb r0, [r6, r0]
-	add lr, lr, r0
-	strb lr, [r5], 1
-_081DD57C:
-	and r0, r1, 0xF
-	ldrsb r0, [r6, r0]
-	add lr, lr, r0
-	strb lr, [r5], 1
-	subs r7, r7, 2
-	bgt _081DD568
-_081DD594:
-	ldr r5, =sDecodingBuffer
-	and r0, r3, 0x3F
-	ldrsb r1, [r5, r0]
-	pop {r0,r2,r5-r7,pc}
-	.pool
-	arm_func_end SoundMainRAM_Unk2
-
-	.text
 	thumb_func_start SoundMainBTM
 SoundMainBTM:
 	mov r12, r4
@@ -1993,7 +1898,7 @@ _081DD9F6:
 	cmp r6, 0
 	beq _081DDA14
 	ldrb r0, [r4, o_CgbChannel_modify]
-	movs r1, CGB_CHANNEL_MO_VOL
+	movs r1, 0x1
 	orrs r0, r1
 	strb r0, [r4, o_CgbChannel_modify]
 _081DDA14:
@@ -2507,8 +2412,3 @@ _081DDD90:
 	thumb_func_end ply_mod
 
 	.align 2, 0 @ Don't pad with nop.
-
-	.bss
-sDecodingBuffer: @ Used as a buffer for audio decoded from compressed DPCM
-	.space 0x40
-	.size sDecodingBuffer, .-sDecodingBuffer
