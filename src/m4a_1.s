@@ -52,11 +52,11 @@ SoundMain_3:
 	cmp r3, 0
 	beq SoundMain_4
 	ldr r0, [r0, o_SoundInfo_musicPlayerHead]
-	bl call_r3_near
+	bl call_r3
 	ldr r0, [sp, 0x18]
 SoundMain_4:
 	ldr r3, [r0, o_SoundInfo_CgbSound]
-	bl call_r3_near
+	bl call_r3
 	ldr r0, [sp, 0x18]
 	ldr r3, [r0, o_SoundInfo_pcmSamplesPerVBlank]
 	mov r8, r3
@@ -83,10 +83,6 @@ lt_SoundMainRAM_Buffer:   .word SoundMainRAM_Buffer + 1
 lt_REG_VCOUNT:            .word REG_VCOUNT
 lt_o_SoundInfo_pcmBuffer: .word o_SoundInfo_pcmBuffer
 lt_PCM_DMA_BUF_SIZE:      .word PCM_DMA_BUF_SIZE
-
-call_r3_near:
-	bx r3
-
 	thumb_func_end SoundMain
 
 /* HQ-Mixer rev 4.0 created by ipatix (c) 2021
@@ -749,7 +745,7 @@ fast_mixing_instructions:
 	/* mix the first 4 stereo samples, then the next 4. */
 	.rept 2
 	  ldmia r5, {r0, r1, r10, lr}       @ load the next 4 stereo samples
-	  .irp reg, r0, r1, r10, lr
+	  .irp reg, r0, r1, r10, lr			
 	    mulne r9, r7, r12
 	    nop                               @ Block #1
 	    nop
