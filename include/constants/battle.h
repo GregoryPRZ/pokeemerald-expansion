@@ -228,6 +228,7 @@ enum VolatileFlags
     F(VOLATILE_SUBSTITUTE,                  substitute,                    (u32, 1), V_BATON_PASSABLE) \
     F(VOLATILE_DESTINY_BOND,                destinyBond,                   (u32, 2)) \
     F(VOLATILE_ESCAPE_PREVENTION,           escapePrevention,              (u32, 1), V_BATON_PASSABLE) \
+    F(VOLATILE_WUXI_FINGER_HOLD,            wuxiFingerHold,                (u32, 2), V_BATON_PASSABLE) \
     F(VOLATILE_NIGHTMARE,                   nightmare,                     (u32, 1)) \
     F(VOLATILE_CURSED,                      cursed,                        (u32, 1), V_BATON_PASSABLE) \
     F(VOLATILE_FORESIGHT,                   foresight,                     (u32, 1)) \
@@ -753,6 +754,15 @@ enum MoveTarget
     TARGET_OPPONENTS_FIELD, // Targets all other battlers and self, e.g. Teatime
     TARGET_ALL_BATTLERS,
 };
+
+// Constants for Tricephaly
+#define TRICEPHALY_1ST_HIT    3
+#define TRICEPHALY_2ND_HIT    2
+#define TRICEPHALY_3RD_HIT    1
+#define TRICEPHALY_OFF        0
+
+// Constants for Fight Spirit
+#define FIGHT_SPIRIT_OFF        0
 
 // Constants for Parental Bond
 #define PARENTAL_BOND_1ST_HIT 2

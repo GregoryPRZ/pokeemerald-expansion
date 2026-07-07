@@ -6866,12 +6866,12 @@ const struct SpeciesInfo gSpeciesInfoGen7[] =
 #if P_FAMILY_GUZZLORD
     [SPECIES_GUZZLORD] =
     {
-        .baseHP        = 223,
-        .baseAttack    = 101,
-        .baseDefense   = 53,
+        .baseHP        = 183,
+        .baseAttack    = 61,
+        .baseDefense   = 83,
         .baseSpeed     = 43,
-        .baseSpAttack  = 97,
-        .baseSpDefense = 53,
+        .baseSpAttack  = 117,
+        .baseSpDefense = 83,
         .types = MON_TYPES(TYPE_DARK, TYPE_DRAGON),
         .catchRate = 45,
         .expYield = (P_UPDATED_EXP_YIELDS >= GEN_8) ? 285 : 257,

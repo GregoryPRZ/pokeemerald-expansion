@@ -1221,22 +1221,13 @@ static bool16 IsInfiltratedSpaceCenter(struct WarpData *warp)
 
 static const u16 sRandomMapMusicPool[] =
 {
-    MUS_B_FRONTIER,
-    MUS_B_TOWER,
-    MUS_B_DOME_LOBBY,
-    MUS_B_DOME,
-    MUS_B_ARENA,
-    MUS_B_FACTORY,
-    MUS_B_PIKE,
-    MUS_B_PALACE,
-    MUS_B_PYRAMID,
-    MUS_DP_LOUNGE,
     MUS_DP_B_TOWER,
     MUS_PL_FIGHT_AREA_DAY,
     MUS_PL_B_ARCADE,
     MUS_PL_B_HALL,
     MUS_PL_B_CASTLE,
     MUS_PL_B_FACTORY,
+<<<<<<< Updated upstream
 	MUS_BW12_GYM_MISTRALTON,
 	MUS_BW12_GYM_OPELUCID,
 	MUS_BW12_BLACK_TOWER,
@@ -1246,6 +1237,13 @@ static const u16 sRandomMapMusicPool[] =
 	MUS_BW12_GYM_DRIFTVEIL,
 	MUS_BW12_GYM_HUMILAU,
 	MUS_BW12_GYM_NIMBASA_STAGE,
+=======
+    MUS_HG_B_TOWER,
+    MUS_HG_B_CASTLE,
+    MUS_HG_B_FACTORY,
+    MUS_HG_B_HALL,
+    MUS_HG_B_ARCADE,
+>>>>>>> Stashed changes
 };
 
 static bool8 sRandomMapMusicValid;

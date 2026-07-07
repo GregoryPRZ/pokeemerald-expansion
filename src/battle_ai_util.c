@@ -811,6 +811,35 @@ static inline void CalcDynamicMoveDamage(struct DamageContext *ctx, u16 *medianD
         maximum += maximum / (B_PARENTAL_BOND_DMG >= GEN_7 ? 4 : 2);
         random  += random  / (B_PARENTAL_BOND_DMG >= GEN_7 ? 4 : 2);
     }
+    else if (ctx->abilities[ctx->battlerAtk] == ABILITY_TRICEPHALY
+          && strikeCount == 0
+          && !AI_IsDoubleSpreadMove(ctx->battlerAtk, ctx->move))
+    {
+        median  += median  / (B_PARENTAL_BOND_DMG >= GEN_7 ? 2 : 1);
+        minimum += minimum / (B_PARENTAL_BOND_DMG >= GEN_7 ? 2 : 1);
+        maximum += maximum / (B_PARENTAL_BOND_DMG >= GEN_7 ? 2 : 1);
+        random  += random  / (B_PARENTAL_BOND_DMG >= GEN_7 ? 2 : 1);
+    }
+    else if (ctx->abilities[ctx->battlerAtk] == ABILITY_FIGHT_SPIRIT
+          && strikeCount == 0
+          && IsPunchingMove(ctx->move)
+          && !IsMultiHitMove(ctx->move)
+          && !AI_IsDoubleSpreadMove(ctx->battlerAtk, ctx->move))
+    {
+        if (ctx->holdEffects[ctx->battlerAtk] == HOLD_EFFECT_LOADED_DICE)
+        {
+            median  = median  * 9 / 4;
+            minimum = minimum * 2;
+            maximum = maximum * 5 / 2;
+            random  = random  * RandomUniform(RNG_AI_DMG_ROLL_RANDOM, 4, 5) / 2;
+        }
+        else
+        {
+            median  = median  * 3 / 2;
+            maximum = maximum * 5 / 2;
+            random  = random  * RandomUniform(RNG_AI_DMG_ROLL_RANDOM, 2, 5) / 2;
+        }
+    }
 
     if (median == 0)
         median = 1;
@@ -1030,7 +1059,7 @@ struct SimulatedDamage AI_CalcDamage(enum Move move, enum BattlerId battlerAtk, 
 bool32 AI_IsDamagedByRecoil(enum BattlerId battler)
 {
     enum Ability ability = gAiLogicData->abilities[battler];
-    if (ability == ABILITY_MAGIC_GUARD || ability == ABILITY_ROCK_HEAD)
+    if (ability == ABILITY_MAGIC_GUARD || ability == ABILITY_ROCK_HEAD || ability == ABILITY_RESILIENT)
         return FALSE;
     return TRUE;
 }
@@ -1175,6 +1204,15 @@ static bool32 AI_IsMoveEffectInMinus(enum BattlerId battlerAtk, enum BattlerId b
     enum Ability abilityDef = gAiLogicData->abilities[battlerDef];
 
     if (GetMoveStrikeCount(move) > 1 || IsMultiHitMove(move))
+    {
+        if (AI_MoveMakesContact(battlerAtk, battlerDef, abilityAtk, gAiLogicData->holdEffects[battlerAtk], move)
+         && abilityAtk != ABILITY_MAGIC_GUARD
+         && (gAiLogicData->holdEffects[battlerDef] == HOLD_EFFECT_ROCKY_HELMET || abilityDef == ABILITY_IRON_BARBS))
+        {
+            return TRUE;
+        }
+    }
+    else if (abilityAtk == ABILITY_FIGHT_SPIRIT && IsPunchingMove(move))
     {
         if (AI_MoveMakesContact(battlerAtk, battlerDef, abilityAtk, gAiLogicData->holdEffects[battlerAtk], move)
          && abilityAtk != ABILITY_MAGIC_GUARD
@@ -1455,7 +1493,11 @@ s32 AI_WhoStrikesFirst(enum BattlerId battlerAI, enum BattlerId battler, enum Mo
 
 bool32 CanEndureHit(enum BattlerId battler, enum BattlerId battlerTarget, enum Move move)
 {
-    if (!AI_BattlerAtMaxHp(battlerTarget) || IsMultiHitMove(move) || gAiLogicData->abilities[battler]  == ABILITY_PARENTAL_BOND)
+    if (!AI_BattlerAtMaxHp(battlerTarget)
+     || IsMultiHitMove(move)
+     || gAiLogicData->abilities[battler] == ABILITY_PARENTAL_BOND
+     || gAiLogicData->abilities[battler] == ABILITY_TRICEPHALY
+     || (gAiLogicData->abilities[battler] == ABILITY_FIGHT_SPIRIT && IsPunchingMove(move)))
         return FALSE;
     if (GetMoveStrikeCount(move) > 1 && !(AI_GetBattlerMoveTargetType(battler, move) == TARGET_SMART && !HasTwoOpponents(battler)))
         return FALSE;

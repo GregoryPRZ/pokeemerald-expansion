@@ -4478,6 +4478,12 @@ BattleScript_AbilityPopUpScripting:
 	copybyte gBattlerAbility, sBATTLER
 	goto BattleScript_AbilityPopUp
 
+BattleScript_WuxiFingerHoldActivates::
+	call BattleScript_AbilityPopUp
+	printstring STRINGID_TARGETCANTESCAPENOW
+	waitmessage B_WAIT_TIME_LONG
+	return
+
 BattleScript_AbilityPopUpOverwriteThenNormal:
 	setbyte sFIXED_ABILITY_POPUP, TRUE
 	showabilitypopup

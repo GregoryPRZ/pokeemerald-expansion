@@ -2445,16 +2445,18 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
         .description = COMPOUND_STRING("Normal moves turn Dragon."),
     },
 
-    [ABILITY_313] =
+    [ABILITY_TRICEPHALY] =
     {
-        .name = _("-------"),
-        .description = COMPOUND_STRING("No special ability."),
+        .name = _("Tricephaly"),
+        .description = COMPOUND_STRING("Moves strike thrice."),
+        .aiRating = 10,
     },
 
-    [ABILITY_314] =
+    [ABILITY_WUXI_FINGER_HOLD] =
     {
-        .name = _("-------"),
-        .description = COMPOUND_STRING("No special ability."),
+        .name = _("Wuxi Finger"),
+        .description = COMPOUND_STRING("Traps weakened foes."),
+        .aiRating = 8,
     },
 
     [ABILITY_MEGA_SOL] =
@@ -2463,21 +2465,30 @@ const struct AbilityInfo gAbilitiesInfo[ABILITIES_COUNT] =
         .description = COMPOUND_STRING("Acts like under sun."),
     },
 
-    [ABILITY_316] =
+    [ABILITY_PREDATOR] =
     {
-        .name = _("-------"),
-        .description = COMPOUND_STRING("No special ability."),
+        .name = _("Predator"),
+        .description = COMPOUND_STRING("Boosts hits on hurt foes."),
+        .aiRating = 5,
     },
 
-    [ABILITY_317] =
+    [ABILITY_FIGHT_SPIRIT] =
     {
-        .name = _("-------"),
-        .description = COMPOUND_STRING("No special ability."),
+        .name = _("Fight Spirit"),
+        .description = COMPOUND_STRING("Punches hit often at half power."),
+        .aiRating = 7,
     },
 
     [ABILITY_SPICY_SPRAY] =
     {
         .name = _("Spicy Spray"),
         .description = COMPOUND_STRING("Burns the foe when damaged."),
+    },
+
+    [ABILITY_RESILIENT] =
+    {
+        .name = _("Resilient"),
+        .description = COMPOUND_STRING("Prevents recoil damage."),
+        .aiRating = 5,
     },
 };

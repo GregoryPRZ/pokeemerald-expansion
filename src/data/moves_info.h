@@ -2691,7 +2691,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .name = COMPOUND_STRING("Teleport"),
         #if B_TELEPORT_BEHAVIOR >= GEN_8
         .description = COMPOUND_STRING(
-            "Switches the user out last.\n"
+            "Switches the user out.\n"
             "Flees when used by wild {PKMN}."),
         #else
         .description = COMPOUND_STRING(
@@ -2704,7 +2704,7 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .accuracy = 0,
         .pp = 20,
         .target = TARGET_USER,
-        .priority = B_UPDATED_MOVE_DATA >= GEN_8 ? -6 : 0,
+        .priority = 0,
         .category = DAMAGE_CATEGORY_STATUS,
         .zMove = { .effect = Z_EFFECT_RECOVER_HP },
         .ignoresProtect = TRUE,

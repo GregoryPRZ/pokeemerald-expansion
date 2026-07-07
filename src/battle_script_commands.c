@@ -1397,6 +1397,14 @@ static void Cmd_attackanimation(void)
             return;
         }
 
+        if (GetBattlerAbility(gBattlerAttacker) == ABILITY_TRICEPHALY
+         && gSpecialStatuses[gBattlerAttacker].tricephalyState < TRICEPHALY_1ST_HIT
+         && gSpecialStatuses[gBattlerAttacker].tricephalyState != TRICEPHALY_OFF)
+        {
+            gBattlescriptCurrInstr = cmd->nextInstr;
+            return;
+        }
+
         if (gBattleScripting.animTargetsHit)
         {
             if (moveTarget == TARGET_BOTH
@@ -2308,6 +2316,15 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
         return;
     }
 
+    if (abilities[battlerAtk] == ABILITY_TRICEPHALY
+     && gSpecialStatuses[gBattlerAttacker].tricephalyState > TRICEPHALY_3RD_HIT
+     && IsBattlerAlive(effectBattler)
+     && IsFinalStrikeEffect(moveEffect))
+    {
+        gBattlescriptCurrInstr = battleScript;
+        return;
+    }
+
     gBattleScripting.battler = battlerAtk;
     gEffectBattler = effectBattler;
 
@@ -2413,8 +2430,16 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
         }
         break;
     case MOVE_EFFECT_PAYDAY:
-        // Don't scatter coins on the second hit of Parental Bond
-        if (IsOnPlayerSide(battlerAtk) && gSpecialStatuses[battlerAtk].parentalBondState != PARENTAL_BOND_2ND_HIT)
+    {
+        // Don't scatter coins on extra hits from Tricephaly.
+        bool32 isTricephalyExtraHit = abilities[battlerAtk] == ABILITY_TRICEPHALY
+                                   && gSpecialStatuses[battlerAtk].tricephalyState < TRICEPHALY_1ST_HIT
+                                   && gSpecialStatuses[battlerAtk].tricephalyState != TRICEPHALY_OFF;
+        if (isTricephalyExtraHit)
+        {
+            gBattlescriptCurrInstr = battleScript;
+        }
+        else if (IsOnPlayerSide(battlerAtk) && gSpecialStatuses[battlerAtk].parentalBondState != PARENTAL_BOND_2ND_HIT)
         {
             u16 payday = gPaydayMoney;
             enum MoveTarget moveTarget = GetBattlerMoveTargetType(battlerAtk, gCurrentMove);
@@ -2437,6 +2462,7 @@ void SetMoveEffect(enum BattlerId battlerAtk, enum BattlerId effectBattler, enum
             gBattlescriptCurrInstr = battleScript;
         }
         break;
+    }
     case MOVE_EFFECT_HAPPY_HOUR:
         if (IsOnPlayerSide(battlerAtk) && !gBattleStruct->moneyMultiplierMove)
         {
@@ -5842,6 +5868,12 @@ static u32 GetTrainerMoneyToGive(u16 trainerId)
     return moneyReward;
 }
 
+static bool32 IsEmeraldTowerBattle(void)
+{
+    return gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_EMERALD_TOWER_BATTLE_ARENA)
+        && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_EMERALD_TOWER_BATTLE_ARENA);
+}
+
 static void Cmd_getmoneyreward(void)
 {
     CMD_ARGS();
@@ -5858,7 +5890,11 @@ static void Cmd_getmoneyreward(void)
     }
     else
     {
-        if (B_WHITEOUT_MONEY <= GEN_3)
+        if (IsEmeraldTowerBattle())
+        {
+            money = 0;
+        }
+        else if (B_WHITEOUT_MONEY <= GEN_3)
         {
             money = GetMoney(&gSaveBlock1Ptr->money) / 2;
         }
@@ -5883,7 +5919,8 @@ static void Cmd_getmoneyreward(void)
         }
         if (!IsEnoughMoney(&gSaveBlock1Ptr->money, money))
             money = GetMoney(&gSaveBlock1Ptr->money);
-        RemoveMoney(&gSaveBlock1Ptr->money, money);
+        if (money != 0)
+            RemoveMoney(&gSaveBlock1Ptr->money, money);
     }
 
     PREPARE_WORD_NUMBER_BUFFER(gBattleTextBuff1, 5, money);
@@ -13944,4 +13981,3 @@ void BS_RestoreStatChangeQueue(void)
     ClearOtherStatChangeValues(gBattlerAttacker);
     gBattlescriptCurrInstr = cmd->nextInstr;
 }
-
