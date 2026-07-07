@@ -1227,23 +1227,11 @@ static const u16 sRandomMapMusicPool[] =
     MUS_PL_B_HALL,
     MUS_PL_B_CASTLE,
     MUS_PL_B_FACTORY,
-<<<<<<< Updated upstream
-	MUS_BW12_GYM_MISTRALTON,
-	MUS_BW12_GYM_OPELUCID,
-	MUS_BW12_BLACK_TOWER,
-	MUS_BW12_WHITE_TREE,
-	MUS_BW12_GYM_VIRBANK,
-	MUS_BW12_GYM_CASTELIA,
-	MUS_BW12_GYM_DRIFTVEIL,
-	MUS_BW12_GYM_HUMILAU,
-	MUS_BW12_GYM_NIMBASA_STAGE,
-=======
     MUS_HG_B_TOWER,
     MUS_HG_B_CASTLE,
     MUS_HG_B_FACTORY,
     MUS_HG_B_HALL,
     MUS_HG_B_ARCADE,
->>>>>>> Stashed changes
 };
 
 static bool8 sRandomMapMusicValid;
