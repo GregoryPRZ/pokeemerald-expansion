@@ -113,6 +113,7 @@ EmeraldTower_BattleArena_EventScript_FaceOpponents::
 	return
 
 EmeraldTower_BattleArena_EventScript_BattleDone::
+	special HealPlayerParty
 	msgbox EmeraldTower_BattleArena_Text_BattleDone, MSGBOX_DEFAULT
 
 EmeraldTower_BattleArena_EventScript_ReturnToLobby::

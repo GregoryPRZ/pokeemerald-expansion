@@ -396,7 +396,17 @@ void DoWhiteOut(void)
     RunScriptImmediately(EventScript_WhiteOut);
     HealPlayerParty();
     Overworld_ResetStateAfterWhiteOut();
-    SetWarpDestinationToLastHealLocation();
+    if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(MAP_EMERALD_TOWER_BATTLE_ARENA)
+     && gSaveBlock1Ptr->location.mapNum == MAP_NUM(MAP_EMERALD_TOWER_BATTLE_ARENA))
+    {
+        VarSet(VAR_EMERALD_TOWER_SELECTED_TRAINER, 0);
+        VarSet(VAR_TEMP_0, 0);
+        SetWarpDestination(MAP_GROUP(MAP_EMERALD_TOWER_LOBBY), MAP_NUM(MAP_EMERALD_TOWER_LOBBY), WARP_ID_NONE, 11, 11);
+    }
+    else
+    {
+        SetWarpDestinationToLastHealLocation();
+    }
     WarpIntoMap();
 }
 
